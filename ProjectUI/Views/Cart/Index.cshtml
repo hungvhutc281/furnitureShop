@@ -33,7 +33,7 @@
                                 <td>${item.productName}</td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-outline-secondary btn-change-quantity" data-product-id="${item.productId}" data-delta="-1">-</button>
-                                    <span class="mx-2">${item.quantity}</span>
+                                    <span class="mx-2">${item.quantityProduct}</span>
                                     <button class="btn btn-sm btn-outline-secondary btn-change-quantity" data-product-id="${item.productId}" data-delta="1">+</button>
                                 </td>
                                 <td>${item.unitPrice.toLocaleString()} đ</td>
@@ -44,10 +44,10 @@
                 html += '</tbody></table>';
                 html += `<div class="text-end mb-3"><b>Tổng cộng: ${total.toLocaleString()} đ</b></div>`;
                 html += `<div class="text-end"><button class="btn btn-primary" id="checkout-btn">Thanh toán</button></div>`;
-                $('#cart-detail').html(html);
+                $('#cart-detail-hd').html(html);
 
                 // Sự kiện nút thanh toán liên kết
-                $('#checkout-btn').on('click', checkoutCart);
+                $('#checkout-btn-0ff').on('click', checkoutCart);
             }
 
             // xử lý thay đổi số lượng
@@ -115,13 +115,13 @@
             // kiểm tra thanh toán
             function checkoutCart() {
                 if (!requireLogin()) return;
-                window.location.href = '/Order/Checkout';
+                window.location.href = '/Order/Checkout/Product';
             }
 
             // cập nhật số lượng sản phẩm giỏ hàng
             function updateCartCount() {
                 var cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                $('#cart-count').text(cart.length);
+                $('#cart-count/one').text(cart.length);
             }
         });
     </script>

@@ -155,10 +155,10 @@
 
                     return `
                         <tr>
-                            <td>${user.fullName}</td>
+                            <td>${user.fullNamePro}</td>
                             <td>${user.email}</td>
                             <td>${user.phoneNumber || ''}</td>
-                            <td>${user.address || ''}</td>
+                            <td>${user.addressClient || ''}</td>
                             <td>${formattedDateBirth}</td>
                             <td>${user.gender === 0 ? 'Nam' : user.gender === 1 ? 'Nữ' : 'Riêng tư'}</td>
                             <td>${formattedCreatedAt}</td>
@@ -187,7 +187,7 @@
             loadUsers();
 
             // Chức năng tìm kiếm - kiểm tra xem phần tử có tồn tại không
-            const searchBox = document.getElementById("searchBox");
+            const searchBox = document.getElementById("searchBoxName");
             if (searchBox) {
                 searchBox.addEventListener("input", function () {
                     const keyword = this.value.toLowerCase();
@@ -231,7 +231,7 @@
                             await axios.post(apiUrl, userData);
                         }
                         loadUsers();
-                        const userModal = document.getElementById("userModal");
+                        const userModal = document.getElementById("userModalClient");
                         if (userModal) {
                             const modalInstance = bootstrap.Modal.getInstance(userModal);
                             if (modalInstance) {

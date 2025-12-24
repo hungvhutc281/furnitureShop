@@ -176,19 +176,7 @@
                 $('#materialBtnGroup').html(html);
             });
 
-            // Sự kiện chọn danh mục
-            $(document).on('click', '#categoryBtnGroup .btn', function () {
-                $('#categoryBtnGroup .btn').removeClass('active');
-                $(this).addClass('active');
-                filterProducts();
-            });
-            // Sự kiện chọn chất liệu
-            $(document).on('click', '#materialBtnGroup .btn', function () {
-                $('#materialBtnGroup .btn').removeClass('active');
-                $(this).addClass('active');
-                filterProducts();
-            });
-
+           
             // Sự kiện radio mức giá
             $(document).on('change', 'input[name="priceRadio"]', function () {
                 // Reset input và slider khi chọn radio
@@ -198,11 +186,7 @@
                 filterProducts();
             });
 
-            // Sự kiện nhập khoảng giá
-            $('#minPriceInput, #maxPriceInput').on('input', function () {
-                $('input[name="priceRadio"]').prop('checked', false);
-                filterProducts();
-            });
+           
 
             // Sự kiện slider
             $('#priceRangeSlider').on('input', function () {
@@ -212,34 +196,7 @@
                 filterProducts();
             });
 
-            // Cập nhật label slider
-            $('#priceRangeSlider').on('input', function () {
-                $('#maxPriceLabel').text(Number($(this).val()).toLocaleString('vi-VN') + 'đ');
-            });
-
-            // Khởi tạo label slider
-            $('#minPriceLabel').text(minSlider.toLocaleString('vi-VN') + 'đ');
-            $('#maxPriceLabel').text(maxSlider.toLocaleString('vi-VN') + 'đ');
-            $('#priceRangeSlider').val(maxSlider);
-
-            function getSelectedCategory() {
-                return $('#categoryBtnGroup .btn.active').data('category') || '';
-            }
-            function getSelectedMaterial() {
-                return $('#materialBtnGroup .btn.active').data('material') || '';
-            }
-            function getSelectedPriceRange() {
-                // Ưu tiên radio
-                let radio = $('input[name="priceRadio"]:checked').val();
-                if (radio) return radio;
-                // Nếu nhập input
-                let min = $('#minPriceInput').val();
-                let max = $('#maxPriceInput').val();
-                if (min && max) return `${min}-${max}`;
-                // Nếu kéo slider
-                if ($('#maxPriceInput').val()) return `0-${$('#maxPriceInput').val()}`;
-                return '';
-            }
+          
 
             function filterProducts() {
                 const categoryId = getSelectedCategory();
@@ -258,47 +215,7 @@
                 showPage(1);
             }
 
-            function renderProducts(products) {
-                let html = '';
-                let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-                products.forEach(function (product) {
-                    const isWishlisted = wishlist.includes((product.productId ?? product.id)?.toString());
-                    html += `
-                                <div class="col mb-4">
-                                    <div class="product-item hover-effect-slide h-100 product-clickable position-relative" data-id="${product.productId}">
-                                        <div class="image-holder position-relative" style="width:100%;height:300px;overflow:hidden;">
-                                            <img src="https://localhost:7227${product.image}" alt="${product.productName}"
-                                                 class="product-image img-fluid" style="width:100%;height:100%;object-fit:cover;">
-                                            <button class="wishlist-btn position-absolute top-0 end-0 m-2 bg-white border-0 rounded-circle p-2" data-product-id="${product.productId}" title="Lưu sản phẩm">
-                                                <svg width="24" height="24" viewBox="0 0 24 24">
-                                                    <use xlink:href="#heart" ${isWishlisted ? 'style=\"fill:#FFA500\"' : ''}></use>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        <div class="product-content p-3">
-                                            <h5 class="element-title text-uppercase fs-5">
-                                                ${product.productName}
-                                            </h5>
-                                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                                <span class="fw-bold text-danger">${product.price.toLocaleString()} VNĐ</span>
-                                                        <button  style="border-radius: 10px;" class="btn btn-dark btn-sm add-to-cart" data-product-id="${product.productId}">
-                                                    Thêm vào giỏ
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                });
-                $('#product-list').html(html);
-                // Thêm sự kiện click vào sản phẩm
-                $('.product-clickable').click(function (e) {
-                    // Nếu click vào nút wishlist hoặc nút thêm vào giỏ thì không chuyển trang
-                    if ($(e.target).closest('.wishlist-btn').length > 0 || $(e.target).closest('.add-to-cart').length > 0) return;
-                    var id = $(this).data('id');
-                    window.location.href = '/Product/Details/' + id;
-                });
-            }
+         
 
             function renderPagination(totalPages) {
                 let html = '';
@@ -426,21 +343,6 @@
                         timerProgressBar: true,
                         background: '#fff0f0',
                         color: '#d32f2f',
-                        customClass: { popup: 'swal2-toast-custom' }
-                    });
-                } else {
-                    wishlist.push(productId);
-                    svgUse.attr('style', 'fill:#FFA500');
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Lưu thành công sản phẩm! Để xem chi tiết vui lòng vào phần lưu.',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        background: '#e6fff2',
-                        color: '#1a7f37',
                         customClass: { popup: 'swal2-toast-custom' }
                     });
                 }
