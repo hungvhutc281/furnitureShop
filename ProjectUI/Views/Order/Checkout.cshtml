@@ -1,0 +1,1171 @@
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+    .checkout-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+
+    .checkout-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .checkout-label {
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+    }
+
+    .payment-method-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    .payment-method-label {
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .checkout-summary-product-img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .checkout-summary-product {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .checkout-summary-product-info {
+        margin-left: 12px;
+        flex: 1;
+    }
+
+    .checkout-summary-product-name {
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .checkout-summary-product-qty {
+        color: #888;
+        font-size: 0.95rem;
+    }
+
+    .checkout-summary-product-price {
+        font-weight: 600;
+        color: #b89d72;
+    }
+
+    .checkout-summary-box {
+        background: #faf9f6;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .checkout-total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #b89d72;
+    }
+
+    .checkout-discount {
+        font-size: 0.95rem;
+        color: #007bff;
+    }
+
+    .checkout-login-btn {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 16px;
+        font-weight: 500;
+    }
+
+        .checkout-login-btn:hover {
+            background: #217dbb;
+        }
+
+    .checkout-fake-radio {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #b89d72;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+        position: relative;
+    }
+
+        .checkout-fake-radio.checked {
+            background: #b89d72;
+            border-color: #b89d72;
+        }
+
+            .checkout-fake-radio.checked:after {
+                content: '';
+                display: block;
+                width: 8px;
+                height: 8px;
+                background: #fff;
+                border-radius: 50%;
+                position: absolute;
+                top: 4px;
+                left: 4px;
+            }
+
+    .checkout-payment-row {
+        cursor: pointer;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+
+        .checkout-payment-row:last-child {
+            border-bottom: none;
+        }
+
+    /* VNPay Payment Styles */
+    .vnpay-section {
+        display: none;
+        margin-top: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+        .vnpay-section.active {
+            display: block;
+        }
+
+    .bank-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .bank-item {
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .bank-item:hover {
+            border-color: #b89d72;
+            transform: translateY(-2px);
+        }
+
+        .bank-item.selected {
+            border-color: #b89d72;
+            background: #f8f5f0;
+        }
+
+    .bank-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        margin-bottom: 5px;
+    }
+
+    .bank-name {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .qr-section {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+    }
+
+        .qr-section.active {
+            display: block !important;
+        }
+
+    .qr-code {
+        width: 200px;
+        height: 200px;
+        margin: 10px auto;
+    }
+
+    .payment-info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+    }
+
+    .payment-amount {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1976d2;
+    }
+
+    .payment-content {
+        font-size: 1.1rem;
+        margin: 10px 0;
+    }
+
+    .countdown {
+        font-size: 1.2rem;
+        color: #f44336;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    /* Modal Styles */
+    .success-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .success-modal.active {
+            display: flex;
+        }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        color: #4caf50;
+        margin-bottom: 20px;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .modal-message {
+        margin-bottom: 20px;
+        color: #666;
+    }
+
+    @@media (max-width: 991px) {
+        .checkout-summary-box {
+            margin-top: 2rem;
+        }
+
+        .bank-list {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+        }
+    }
+</style>
+
+<div class="container mt-5 mb-5 checkout-container p-4">
+    <div class="row">
+        <!-- Left: Thông tin khách hàng -->
+        <div class="col-lg-7 col-12">
+            <div class="checkout-title">Thông tin giao hàng</div>
+            <form id="checkoutForm">
+                <div class="mb-3">
+                    <label class="checkout-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="customerName" required />
+                </div>
+                <div class="mb-3">
+                    <label class="checkout-label">Số điện thoại</label>
+                    <input type="text" class="form-control" id="phone" required />
+                </div>
+                <div class="mb-3">
+                    <label class="checkout-label">Email</label>
+                    <input type="email" class="form-control" id="email" required />
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="checkout-label">Tỉnh/Thành</label>
+                        <select class="form-control" id="province" required></select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="checkout-label">Quận/Huyện</label>
+                        <select class="form-control" id="district" required></select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="checkout-label">Phường/Xã</label>
+                        <select class="form-control" id="ward" required></select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="checkout-label">Địa chỉ chi tiết</label>
+                    <input type="text" class="form-control" id="address" required />
+                </div>
+                <div class="mb-3">
+                    <label class="checkout-label">Ghi chú</label>
+                    <textarea class="form-control" id="note"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="checkout-label">Phương thức thanh toán</label>
+                    <div id="paymentMethods">
+                        <div class="checkout-payment-row" data-method="BANK">
+                            <span class="checkout-fake-radio" id="radio-bank"></span>
+                            <i class="fa-solid fa-building-columns payment-method-icon" style="color:#2d6a4f"></i>
+                            <span class="payment-method-label">Thanh toán khi nhận hàng</span>
+                        </div>
+
+                        <div class="checkout-payment-row" data-method="VNPAY">
+                            <span class="checkout-fake-radio" id="radio-vnpay"></span>
+                            <img src="@Url.Content("~/images/vnpay.jpg")" class="payment-method-icon" style="background:#fff;border-radius:6px;" alt="VNPAY" />
+                            <span class="payment-method-label">Thanh toán online qua VNPAY</span>
+                        </div>
+                    </div>
+
+                    <!-- VNPay Payment Section -->
+                    <div class="vnpay-section" id="vnpaySection">
+                        <h5>Chọn ngân hàng</h5>
+                        <div class="bank-list" id="bankList">
+                            <!-- Danh sách ngân hàng sẽ được load động -->
+                        </div>
+
+                        <div class="qr-section" id="qrSection">
+                            <h5>Quét mã QR để thanh toán</h5>
+                            <div class="payment-info">
+                                <div class="payment-amount" id="paymentAmount">0 đ</div>
+                                <div class="payment-content" id="paymentContent">Thanh toán đơn hàng</div>
+                            </div>
+                            <div class="qr-code" id="qrCode">
+                                <!-- QR Code sẽ được tạo ở đây -->
+                            </div>
+                            <div class="countdown" id="countdown">05:00</div>
+                            <p>Thời gian thanh toán còn lại</p>
+                            <button type="button" class="btn btn-success" id="confirmPaidBtn" style="display:none;">
+                                Tôi đã thanh toán
+                            </button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="paymentMethod" value="BANK" />
+                    <input type="hidden" id="selectedBank" value="" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="checkoutBtn">Hoàn tất đặt đơn hàng</button>
+            </form>
+        </div>
+        <!-- Right: Sản phẩm và tổng tiền -->
+        <div class="col-lg-5 col-12">
+            <div class="checkout-summary-box mb-4">
+                <div class="checkout-title" style="font-size:1.3rem; margin-bottom:1rem;">Sản phẩm chuẩn bị thanh toán</div>
+                <div id="cartItems"></div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="discountCode" placeholder="Mã giảm giá" style="max-width:180px;display:inline-block;" />
+                    <button class="btn btn-outline-secondary btn-sm" id="applyDiscount">Sử dụng</button>
+                </div>
+                <div class="mb-2">
+                    <span class="checkout-label">Khách hàng thân thiết</span>
+                    <button class="checkout-login-btn ms-2">Đăng nhập</button>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <span>Tạm tính</span>
+                    <span id="subtotalAmount">0 đ</span>
+                </div>
+                <div class="d-flex justify-content-between mt-1">
+                    <span>Phí vận chuyển</span>
+                    <span id="shippingFee">0 đ</span>
+                </div>
+                <div class="d-flex justify-content-between mt-2 checkout-total">
+                    <span>Tổng cộng</span>
+                    <span id="totalAmount">0 đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-modal" id="successModal">
+    <div class="modal-content">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="modal-title">Thông báo</div>
+        <div class="modal-message">
+            Đơn hàng của bạn đã được thanh toán thành công.<br>
+            Email xác nhận đã được gửi đến địa chỉ email của bạn.
+        </div>
+        <button class="btn btn-primary" onclick="closeSuccessModal()">Đóng</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        var userEmail = localStorage.getItem('userEmail'); // Ưu tiên lấy từ localStorage đã được set đúng sau login
+        const userId = localStorage.getItem('userId') || null;
+        if (!userId) {
+            window.location.href = '/Users/Login';
+        }
+        // const registeredEmail = localStorage.getItem('userEmail') || "user@email.com";
+        document.getElementById("email").value = localStorage.getItem('lastLoginEmail') || '';
+
+        // Danh sách ngân hàng VNPay (chỉ giữ VCB)
+        const bankList = [
+            { code: 'VCB', name: 'Vietcombank', logo: 'https://api.vietqr.io/img/VCB.png' }
+        ];
+
+        let paymentTimer = null;
+        let totalAmountValue = 0;
+        let qrCodeInstance = null;
+        let selectedPayment = 'BANK'; // định nghĩa phương thức
+
+        // Payment method selection - MOVED TO TOP
+        function selectPaymentMethod(method) {
+            selectedPayment = method;
+            updatePaymentUI();
+        }
+
+        function updatePaymentUI() {
+            ["bank", "vnpay"].forEach(id => {
+                const element = document.getElementById("radio-" + id);
+                if (element) {
+                    element.classList.remove("checked");
+                }
+            });
+
+            const selectedElement = document.getElementById("radio-" + selectedPayment.toLowerCase());
+            if (selectedElement) {
+                selectedElement.classList.add("checked");
+            }
+
+            document.getElementById("paymentMethod").value = selectedPayment;
+
+            // Hiển thị CNPAY
+            const vnpaySection = document.getElementById('vnpaySection');
+            if (selectedPayment === 'VNPAY') {
+                vnpaySection.classList.add('active');
+                renderBankList();
+
+                // Nếu đã có ngân hàng được chọn trước đó, hiển thị lại QR
+                const selectedBank = document.getElementById('selectedBank').value;
+                if (selectedBank) {
+                    generateQRCode(selectedBank);
+                }
+            } else {
+                vnpaySection.classList.remove('active');
+                const qrSection = document.getElementById('qrSection');
+                if (qrSection) {
+                    qrSection.classList.remove('active');
+                }
+                if (paymentTimer) {
+                    clearInterval(paymentTimer);
+                    paymentTimer = null;
+                }
+                if (qrCodeInstance) {
+                    qrCodeInstance = null;
+                }
+            }
+        }
+
+        // Hiển thị tỉnh
+        let provinceData = null;
+        async function loadProvinces() {
+            try {
+                const res = await axios.get("https://provinces.open-api.vn/api/?depth=3");
+                provinceData = res.data;
+                const select = document.getElementById("province");
+                select.innerHTML = '<option value="">Chọn tỉnh/thành</option>';
+                provinceData.forEach(p => {
+                    select.innerHTML += `<option value="${p.code}">${p.name}</option>`;
+                });
+            } catch (error) {
+                console.error("Lỗi khi load provinces:", error);
+            }
+        }
+
+        function loadDistricts(provinceCode) {
+            const province = provinceData.find(p => p.code == provinceCode);
+            const select = document.getElementById("district");
+            select.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            if (!province) return;
+            province.districts.forEach(d => {
+                select.innerHTML += `<option value="${d.code}">${d.name}</option>`;
+            });
+            document.getElementById("ward").innerHTML = '<option value="">Chọn phường/xã</option>';
+        }
+
+        function loadWards() {
+            const provinceCode = document.getElementById("province").value;
+            const districtCode = document.getElementById("district").value;
+            const province = provinceData.find(p => p.code == provinceCode);
+            if (!province) return;
+            const district = province.districts.find(d => d.code == districtCode);
+            const select = document.getElementById("ward");
+            select.innerHTML = '<option value="">Chọn phường/xã</option>';
+            if (!district) return;
+            district.wards.forEach(w => {
+                select.innerHTML += `<option value="${w.code}">${w.name}</option>`;
+            });
+        }
+
+        document.getElementById("province").onchange = function () {
+            loadDistricts(this.value);
+        };
+        document.getElementById("district").onchange = function () {
+            loadWards();
+        };
+
+        function renderBankList() {
+            const bankListElement = document.getElementById('bankList');
+            let html = '';
+            bankList.forEach(bank => {
+                html += `
+                                                    <div class="bank-item" data-bank="${bank.code}">
+                                                        <img src="${bank.logo}" alt="${bank.name}" class="bank-logo" />
+                                                        <div class="bank-name">${bank.name}</div>
+                                                    </div>
+                                                    `;
+            });
+            bankListElement.innerHTML = html;
+
+            // Thêm sự kiện click cho các ngân hàng
+            document.querySelectorAll('.bank-item').forEach(item => {
+                item.onclick = function () {
+                    // Xóa class selected từ tất cả các ngân hàng
+                    document.querySelectorAll('.bank-item').forEach(b => b.classList.remove('selected'));
+                    // Thêm class selected cho ngân hàng được chọn
+                    this.classList.add('selected');
+
+                    const bankCode = this.getAttribute('data-bank');
+                    document.getElementById('selectedBank').value = bankCode;
+
+                    // Tạo mã QR và hiển thị khu vực QR
+                    generateQRCode(bankCode);
+                };
+            });
+        }
+
+        // Tạo QR Code - Sử dụng thư viện qrcode từ CDN
+        function generateQRCode(bankCode) {
+            console.log('Generating QR for bank:', bankCode);
+
+            const selectedBank = bankList.find(b => b.code === bankCode);
+            if (!selectedBank) {
+                console.error('Bank not found:', bankCode);
+                return;
+            }
+
+            // Đảm bảo totalAmountValue được cập nhật
+            if (!totalAmountValue || totalAmountValue === 0) {
+                console.error('Total amount is 0 or not set, recalculating...');
+                renderCart().then(() => {
+                    if (totalAmountValue > 0) {
+                        generateQRCode(bankCode);
+                    } else {
+                        console.error('Still no total amount after recalculation');
+                    }
+                });
+                return;
+            }
+
+            const accountNumber = '1027453526';
+            const accountName = 'HOANGVANHUNG';
+            const amount = totalAmountValue;
+            const orderId = 'DH' + Date.now();
+            const description = `Thanh toan don hang ${orderId}`;
+
+            // Tạo VietQR URL
+            const vietQRUrl = `https://img.vietqr.io/image/${bankCode}-${accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(accountName)}`;
+
+            try {
+                const qrCodeElement = document.getElementById('qrCode');
+                qrCodeElement.innerHTML = ''; // Xóa nội dung cũ
+
+                // Sử dụng VietQR API để tạo QR code
+                const qrImg = document.createElement('img');
+                qrImg.src = vietQRUrl;
+                qrImg.style.width = '200px';
+                qrImg.style.height = '200px';
+                qrImg.style.border = '1px solid #ddd';
+                qrImg.style.borderRadius = '8px';
+                qrImg.alt = 'QR Code thanh toán';
+
+                qrImg.onload = function () {
+                    console.log('QR Code loaded successfully');
+                    // Cập nhật thông tin thanh toán
+                    document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' đ';
+                    document.getElementById('paymentContent').innerHTML = `
+                                                        <div style="text-align: left; margin: 10px 0;">
+                                                            <p><strong>Ngân hàng:</strong> ${selectedBank.name}</p>
+                                                            <p><strong>Số TK:</strong> ${accountNumber}</p>
+                                                            <p><strong>Tên TK:</strong> ${accountName}</p>
+                                                            <p><strong>Nội dung:</strong> ${description}</p>
+                                                            <p><strong>Tổng tiền:</strong> ${amount.toLocaleString()} đ</p>
+                                                        </div>
+                                                        `;
+
+                    // Hiển thị khu vực QR
+                    const qrSection = document.getElementById('qrSection');
+                    qrSection.classList.add('active');
+                    console.log('QR Section is now visible');
+
+                    // Bắt đầu đếm ngược
+                    startPaymentTimer();
+                };
+
+                qrImg.onerror = function () {
+                    console.error('Failed to load QR code from VietQR API');
+                    // Fallback: Tạo QR code bằng thư viện qrcode
+                    generateQRCodeFallback(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId);
+                };
+
+                qrCodeElement.appendChild(qrImg);
+
+            } catch (error) {
+                console.error('QR Code generation error:', error);
+                // Fallback: Tạo QR code bằng thư viện qrcode
+                generateQRCodeFallback(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId);
+            }
+        }
+
+        // Fallback function sử dụng thư viện qrcode
+        function generateQRCodeFallback(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId) {
+            console.log('Using fallback QR code generation');
+
+            // Kiểm tra và load thư viện QRCode nếu chưa có
+            if (typeof QRCode === 'undefined') {
+                console.log('Loading QRCode library...');
+                loadQRCodeLibrary().then(() => {
+                    generateQRCodeWithLibrary(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId);
+                }).catch(error => {
+                    console.error('Failed to load QRCode library:', error);
+                    showQRError();
+                });
+            } else {
+                generateQRCodeWithLibrary(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId);
+            }
+        }
+
+        function loadQRCodeLibrary() {
+            return new Promise((resolve, reject) => {
+                // Xóa script cũ nếu có
+                const oldScript = document.querySelector('script[src*="qrcode"]');
+                if (oldScript) {
+                    oldScript.remove();
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+                script.onload = () => {
+                    console.log('QRCode library loaded successfully');
+                    resolve();
+                };
+                script.onerror = () => {
+                    console.error('Failed to load QRCode library');
+                    reject(new Error('Failed to load QRCode library'));
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        function generateQRCodeWithLibrary(bankCode, selectedBank, accountNumber, accountName, amount, description, orderId) {
+            try {
+                const qrCodeElement = document.getElementById('qrCode');
+                qrCodeElement.innerHTML = ''; // Xóa nội dung cũ
+
+                // Xóa QR code instance cũ
+                if (qrCodeInstance) {
+                    qrCodeInstance.clear();
+                    qrCodeInstance = null;
+                }
+
+                // Tạo dữ liệu QR
+                const qrData = `Bank: ${selectedBank.name}
+                                                Account: ${accountNumber}
+                                                Name: ${accountName}
+                                                Amount: ${amount.toLocaleString()} VND
+                                                Content: ${description}`;
+
+                // Tạo QR code mới
+                qrCodeInstance = new QRCode(qrCodeElement, {
+                    text: qrData,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+
+                // Cập nhật thông tin thanh toán
+                document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' đ';
+                document.getElementById('paymentContent').innerHTML = `
+                                                    <div style="text-align: left; margin: 10px 0;">
+                                                        <p><strong>Ngân hàng:</strong> ${selectedBank.name}</p>
+                                                        <p><strong>Số TK:</strong> ${accountNumber}</p>
+                                                        <p><strong>Tên TK:</strong> ${accountName}</p>
+                                                        <p><strong>Nội dung:</strong> ${description}</p>
+                                                        <p><strong>Tổng tiền:</strong> ${amount.toLocaleString()} đ</p>
+                                                    </div>
+                                                    `;
+
+                // Hiển thị khu vực QR
+                const qrSection = document.getElementById('qrSection');
+                qrSection.classList.add('active');
+                console.log('QR Section is now visible (fallback)');
+
+                // Bắt đầu đếm ngược
+                startPaymentTimer();
+
+            } catch (error) {
+                console.error('QR Code generation error (fallback):', error);
+                showQRError();
+            }
+        }
+
+        // Hiện thị QR nội dung
+        function showQRError() {
+            const qrCodeElement = document.getElementById('qrCode');
+            qrCodeElement.innerHTML = `
+                                                <div style="padding: 20px; text-align: center; color: #f44336; border: 2px dashed #f44336; border-radius: 8px;">
+                                                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                    <p><strong>Không thể tạo mã QR</strong></p>
+                                                    <p>Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác</p>
+                                                    <button class="btn btn-primary btn-sm" onclick="retryQRGeneration()">Thử lại</button>
+                                                </div>
+                                                `;
+        }
+
+        // Render lại mã QR
+        function retryQRGeneration() {
+            const selectedBank = document.getElementById('selectedBank').value;
+            if (selectedBank) {
+                generateQRCode(selectedBank);
+            }
+        }
+
+        // Thời gian 5p giảm dần
+        function startPaymentTimer() {
+            if (paymentTimer) {
+                clearInterval(paymentTimer);
+            }
+
+            let timeLeft = 5 * 60; 
+            const countdownElement = document.getElementById('countdown');
+            const confirmBtn = document.getElementById('confirmPaidBtn');
+
+            if (confirmBtn) {
+                confirmBtn.style.display = 'inline-block';
+            }
+
+            paymentTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                if (countdownElement) {
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(paymentTimer);
+                    paymentTimer = null;
+                    if (countdownElement) {
+                        countdownElement.textContent = 'Hết thời gian thanh toán';
+                    }
+                    if (confirmBtn) {
+                        confirmBtn.style.display = 'none';
+                    }
+                    // Reset lại mã QR
+                    const qrSection = document.getElementById('qrSection');
+                    if (qrSection) {
+                        qrSection.classList.remove('active');
+                    }
+                    if (qrCodeInstance) {
+                        qrCodeInstance = null;
+                    }
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Hết thời gian thanh toán',
+                        text: 'Vui lòng tạo mã QR mới.',
+                        confirmButtonText: 'Đóng'
+                    });
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        let cart = [];
+        if (localStorage.getItem("cart")) {
+            cart = JSON.parse(localStorage.getItem("cart"));
+        }
+
+        async function loadProductImages() {
+            try {
+                const res = await axios.get("https://localhost:7227/api/admin/product");
+                const productImages = {};
+                res.data.forEach(product => {
+                    if (product.image) {
+                        productImages[product.productId] = product.image;
+                    } else {
+                        productImages[product.productId] = null;
+                    }
+                });
+                return productImages;
+            } catch (error) {
+                console.error("Error loading product images:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể tải hình ảnh sản phẩm',
+                    text: 'Vui lòng thử lại sau',
+                    confirmButtonText: 'Đóng'
+                });
+                return {};
+            }
+        }
+
+        async function renderCart() {
+            try {
+                const productImages = await loadProductImages();
+                let html = '';
+                let subtotal = 0;
+
+                for (const product of cart) {
+                    let imageUrl = productImages[product.productId]
+                        ? `https://localhost:7227${productImages[product.productId].startsWith('/') ? '' : '/'}${productImages[product.productId]}`
+                        : '/images/no-image.png';
+
+                    html += `
+                                                <div class='checkout-summary-product'>
+                                                    <img src='${imageUrl}' class='checkout-summary-product-img' alt='${product.productName}' onerror="this.src='/images/no-image.png'" />
+                                                    <div class='checkout-summary-product-info'>
+                                                        <div class='checkout-summary-product-name'>${product.productName}</div>
+                                                        <div class='checkout-summary-product-qty'>SL: ${product.quantity}</div>
+                                                    </div>
+                                                    <div class='checkout-summary-product-price'>${(product.unitPrice * product.quantity).toLocaleString()} đ</div>
+                                                </div>`;
+                    subtotal += product.unitPrice * product.quantity;
+                }
+
+                document.getElementById("cartItems").innerHTML = html;
+                document.getElementById("subtotalAmount").innerText = subtotal.toLocaleString() + ' đ';
+
+                const shipping = cart.length > 0 ? 30000 : 0;
+                document.getElementById("shippingFee").innerText = shipping.toLocaleString() + ' đ';
+
+                totalAmountValue = subtotal + shipping;
+                document.getElementById("totalAmount").innerText = totalAmountValue.toLocaleString() + ' đ';
+
+                console.log('Cart rendered, total amount:', totalAmountValue);
+            } catch (error) {
+                console.error("Error rendering cart:", error);
+                // Hiển thị thông báo phản hồi khách hàng
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể hiển thị giỏ hàng',
+                    text: 'Vui lòng thử lại sau',
+                    confirmButtonText: 'Đóng'
+                });
+                document.getElementById("cartItems").innerHTML = '<div class="text-danger">Không thể tải giỏ hàng.</div>';
+                document.getElementById("subtotalAmount").innerText = '0 đ';
+                document.getElementById("shippingFee").innerText = '0 đ';
+                document.getElementById("totalAmount").innerText = '0 đ';
+            }
+        }
+
+        // Tiến hành đạt hàng
+        async function processOrder(isPaid = false) {
+            const data = {
+                userId: userId,
+                customerName: document.getElementById("customerName").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+                address: document.getElementById("address").value,
+                province: document.getElementById("province").value,
+                district: document.getElementById("district").value,
+                ward: document.getElementById("ward").value,
+                paymentMethod: document.getElementById("paymentMethod").value,
+                note: document.getElementById("note").value,
+                products: cart.map(x => ({ productId: x.productId, quantity: x.quantity, unitPrice: x.unitPrice })),
+                isPaid: isPaid,
+                bankCode: document.getElementById("selectedBank").value,
+                status: isPaid ? 'PendingConfirmation' : 'PendingPayment'
+            };
+
+            try {
+                const res = await axios.post("https://localhost:7227/api/Orders/checkout", data);
+
+                let successMessage = 'Đơn hàng của bạn đã được đặt thành công!';
+
+                if (data.paymentMethod === 'BANK') {
+                    successMessage = 'Đơn hàng của bạn đã được đặt thành công! Vui lòng để ý điện thoại để nhận thông tin giao hàng.';
+                } else if (data.paymentMethod === 'VNPAY') {
+                    if (isPaid) {
+                        successMessage = 'Đơn hàng của bạn đã được đặt thành công và đang chờ xác nhận thanh toán từ admin. Vui lòng kiểm tra email để biết thêm chi tiết.';
+                    } else {
+                        successMessage = 'Đơn hàng của bạn đã được đặt thành công và đang chờ thanh toán VNPAY.';
+                    }
+                }
+
+                await sendConfirmationEmail(data.email, res.data.orderId, isPaid);
+                let modalTitle = 'Thông báo'; 
+                if (data.paymentMethod === 'BANK') {
+                    modalTitle = 'Đặt hàng thành công!';
+                    successMessage = 'Đơn hàng của bạn đã được đặt thành công! Vui lòng để ý điện thoại để nhận thông tin giao hàng.';
+                } else if (data.paymentMethod === 'VNPAY') {
+                    if (isPaid) {
+                        modalTitle = 'Thanh toán thành công!';
+                        successMessage = 'Đơn hàng của bạn đã được đặt thành công và đang chờ xác nhận thanh toán từ admin. Vui lòng kiểm tra email để biết thêm chi tiết.';
+                    } else {
+                        modalTitle = 'Đặt hàng thành công!'; // Or 'Chờ thanh toán'?
+                        successMessage = 'Đơn hàng của bạn đã được đặt thành công và đang chờ thanh toán VNPAY.';
+                    }
+                }
+
+                showSuccessModal(successMessage, modalTitle);
+
+                if (paymentTimer) {
+                    clearInterval(paymentTimer);
+                    paymentTimer = null;
+                }
+                //Xóa mã qr sau khi haofn tất
+                if (qrCodeInstance) {
+                    qrCodeInstance = null;
+                }
+            } catch (err) {
+                console.error('Order error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi đặt hàng',
+                    text: "Có lỗi khi đặt hàng: " + (err.response?.data?.message || err.message),
+                    confirmButtonText: 'Đóng'
+                });
+            }
+        }
+
+        // Gửi email xác nhạn
+        async function sendConfirmationEmail(email, orderId, isPaid) {
+            try {
+                const emailData = {
+                    email: email,
+                    orderId: orderId,
+                    customerName: document.getElementById("customerName").value,
+                    totalAmount: totalAmountValue,
+                    isPaid: isPaid,
+                    paymentMethod: document.getElementById("paymentMethod").value,
+                    bankCode: document.getElementById("selectedBank").value
+                };
+
+                await axios.post("https://localhost:7227/api/Email/send-order-confirmation", emailData);
+            } catch (error) {
+                console.error('Email sending error:', error);
+            }
+        }
+
+        function showSuccessModal(message, title = 'Thông báo') {
+            const modalTitle = document.querySelector('.modal-title');
+            if (modalTitle) {
+                modalTitle.textContent = title;
+            }
+            const modalMessage = document.querySelector('.modal-message');
+            if (modalMessage) {
+                modalMessage.innerHTML = message || 'Đơn hàng của bạn đã được đặt thành công!<br>Email xác nhận đã được gửi đến địa chỉ email của bạn.';
+            }
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.classList.add('active');
+            }
+        }
+
+        function closeSuccessModal() {
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.classList.remove('active');
+            }
+            localStorage.removeItem("cart");
+            window.location.href = "/";
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadProvinces();
+
+            renderCart();
+
+            const checkoutForm = document.getElementById("checkoutForm");
+            if (checkoutForm) {
+                checkoutForm.onsubmit = async function (e) {
+                    e.preventDefault();
+
+                    if (!userId) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Yêu cầu đăng nhập',
+                            text: 'Bạn cần đăng nhập để đặt hàng!',
+                            showCancelButton: true,
+                            confirmButtonText: 'Đăng nhập ngay',
+                            cancelButtonText: 'Để sau',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/Users/Login';
+                            }
+                        });
+                        return;
+                    }
+
+                    if (cart.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Giỏ hàng trống',
+                            text: 'Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt.',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+
+                    // Xử lý kiếm tra dữ liệu xem nhập đủ chưa
+                    const requiredFields = ['customerName', 'phone', 'email', 'province', 'district', 'ward', 'address'];
+                    for (let field of requiredFields) {
+                        const fieldElement = document.getElementById(field);
+                        if (!fieldElement || !fieldElement.value.trim()) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Thiếu thông tin',
+                                text: 'Vui lòng điền đầy đủ thông tin giao hàng!',
+                                confirmButtonText: 'OK'
+                            });
+                            if (fieldElement) fieldElement.focus();
+                            return;
+                        }
+                    }
+
+                    if (selectedPayment === 'VNPAY') {
+                        if (!document.getElementById('selectedBank').value) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Thiếu thông tin thanh toán',
+                                text: 'Vui lòng chọn ngân hàng để thanh toán!',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+                        const qrSection = document.getElementById('qrSection');
+                        if (!qrSection || !qrSection.classList.contains('active')) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Chưa thanh toán',
+                                text: 'Vui lòng quét mã QR và thanh toán trước khi hoàn tất đơn hàng!',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Hướng dẫn thanh toán',
+                            text: 'Vui lòng quét mã QR và nhấn "Tôi đã thanh toán" sau khi chuyển khoản thành công!',
+                            confirmButtonText: 'Đã hiểu'
+                        });
+                        return;
+                    }
+
+                    processOrder(false);
+                };
+            }
+
+            const confirmPaidBtn = document.getElementById('confirmPaidBtn');
+            if (confirmPaidBtn) {
+                confirmPaidBtn.onclick = async function () {
+                    const result = await Swal.fire({
+                        title: 'Xác nhận thanh toán',
+                        text: 'Bạn đã chuyển khoản thành công chưa?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Đã chuyển khoản',
+                        cancelButtonText: 'Chưa chuyển khoản'
+                    });
+                    if (result.isConfirmed) {
+                        processOrder(true);
+                    }
+                };
+            }
+
+
+            if (localStorage.getItem("userName")) {
+                const nameField = document.getElementById("customerName");
+                if (nameField) nameField.value = localStorage.getItem("userName");
+            }
+            if (localStorage.getItem("userPhone")) {
+                const phoneField = document.getElementById("phone");
+                if (phoneField) phoneField.value = localStorage.getItem("userPhone");
+            }
+            if (localStorage.getItem("userAddress")) {
+                const addressField = document.getElementById("address");
+                if (addressField) addressField.value = localStorage.getItem("userAddress");
+            }
+
+            const customerNameField = document.getElementById("customerName");
+            if (customerNameField) {
+                customerNameField.addEventListener("input", function () {
+                    localStorage.setItem("userName", this.value);
+                });
+            }
+
+            const phoneField = document.getElementById("phone");
+            if (phoneField) {
+                phoneField.addEventListener("input", function () {
+                    localStorage.setItem("userPhone", this.value);
+                });
+            }
+
+            const addressField = document.getElementById("address");
+            if (addressField) {
+                addressField.addEventListener("input", function () {
+                    localStorage.setItem("userAddress", this.value);
+                });
+            }
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape") {
+                    const successModal = document.getElementById('successModal');
+                    if (successModal && successModal.classList.contains('active')) {
+                        closeSuccessModal();
+                    }
+                }
+            });
+
+            document.querySelectorAll('.checkout-payment-row').forEach(row => {
+                row.addEventListener('click', function () {
+                    const method = this.getAttribute('data-method');
+                    selectPaymentMethod(method);
+                });
+            });
+        });
+
+        window.closeSuccessModal = closeSuccessModal;
+        window.retryQRGeneration = retryQRGeneration;
+    </script>
+}

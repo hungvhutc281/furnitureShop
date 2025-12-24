@@ -1,0 +1,480 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="pill" href="#profile-tab">Thông tin cá nhân</a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#password-tab">Đổi mật khẩu</a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="pill" href="#orders-tab">Đơn hàng đã đặt</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="profile-tab">
+                    <div class="text-center mb-4">
+                        <img id="avatar-img" src="@Url.Content("~/images/user.png")" alt="Avatar" class="rounded-circle" style="width:100px;height:100px;object-fit:cover;" />
+                        <form id="avatarForm" enctype="multipart/form-data" style="margin-top:8px;">
+                            <input type="file" name="file" id="avatarInput" accept="image/*" hidden />
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('avatarInput').click();">Thay ảnh đại diện</button>
+                        </form>
+                    </div>
+
+                    <form id="updateProfileForm">
+                        <div class="mb-3">
+                            <label>Họ tên</label>
+                            <input type="text" class="form-control" name="fullName" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" class="form-control" name="email" required readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label>Địa chỉ</label>
+                            <input type="text" class="form-control" name="address" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Ngày sinh</label>
+                            <input type="date" class="form-control" name="dateBirth" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Số điện thoại</label>
+                            <input type="text" class="form-control" name="phoneNumber" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Giới tính</label>
+                            <select class="form-control" name="gender" required>
+                                <option value="0">Nam</option>
+                                <option value="1">Nữ</option>
+                                <option value="2">Riêng tư</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Cập nhật thông tin</button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="password-tab">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label>Mật khẩu cũ</label>
+                            <input type="password" class="form-control" name="oldPassword" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" class="form-control" name="newPassword" required />
+                        </div>
+                        <div class="mb-3">
+                            <label>Nhập lại mật khẩu mới</label>
+                            <input type="password" class="form-control" name="confirmPassword" required />
+                        </div>
+                        <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="orders-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        function getStatusClass(status) {
+            switch (status) {
+                case 'Pending': return 'bg-warning';
+                case 'Processing': return 'bg-info';
+                case 'Shipped': return 'bg-primary';
+                case 'Delivered': return 'bg-success';
+                case 'Cancelled': return 'bg-danger';
+                case 'Chờ xác nhận':
+                case 'PendingConfirmation': return 'bg-warning';
+                case 'Chờ xác nhận thanh toán':
+                case 'PendingPayment': return 'bg-secondary';
+                case 'Đang vận chuyển':
+                case 'Shipping': return 'bg-info';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'Pending': return 'Chờ xử lý';
+                case 'Processing': return 'Đang xử lý';
+                case 'Shipped': return 'Đang vận chuyển';
+                case 'Delivered': return 'Đã giao hàng';
+                case 'Cancelled': return 'Đã hủy';
+                case 'Chờ xác nhận': return 'Chờ xác nhận';
+                case 'Chờ xác nhận thanh toán': return 'Chờ xác nhận thanh toán';
+                case 'Đang vận chuyển': return 'Đang vận chuyển';
+                default: return status || 'Không xác định';
+            }
+        }
+
+        var userEmail = localStorage.getItem('userEmail');
+        const userId = localStorage.getItem('userId');
+
+        if (!userEmail || !userId) {
+            window.location.href = '/Users/Login';
+        }
+
+        $(document).ready(function () {
+            loadProfile();
+            loadOrders();
+
+            function loadProfile() {
+                if (!userEmail) {
+                    console.error('No user email found');
+                    return;
+                }
+
+                $.ajax({
+                    url: `https://localhost:7227/api/auth/get-user-by-email`,
+                    type: 'GET',
+                    data: { email: userEmail },
+                    success: function (data) {
+                        console.log('Profile data loaded:', data);
+                        $('[name=fullName]').val(data.fullName || '');
+                        $('[name=email]').val(data.email || '');
+                        $('[name=address]').val(data.address || '');
+                        $('[name=dateBirth]').val(data.dateBirth ? data.dateBirth.substring(0, 10) : '');
+                        $('[name=phoneNumber]').val(data.phoneNumber || '');
+                        $('[name=gender]').val(data.gender || 0);
+
+                        // cập nhật hình ảnh profile
+                        if (data.image) {
+                            let imageSrc = `https://localhost:7227${data.image}`;
+                            $('#avatar-img').attr('src', imageSrc);
+                        } else {
+                            $('#avatar-img').attr('src', '/images/user.png');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading profile:', xhr.responseText);
+                        toastr.error('Không thể tải thông tin profile');
+                    }
+                });
+            }
+
+            function loadOrders() {
+                if (!userId) {
+                    console.error('No user ID found');
+                    return;
+                }
+
+                $.ajax({
+                    url: `https://localhost:7227/api/Orders/user/${userId}`,
+                    type: 'GET',
+                    success: function (orders) {
+                        console.log('Orders loaded:', orders);
+                        const ordersList = $('#ordersList');
+                        ordersList.empty();
+
+                        if (!orders || orders.length === 0) {
+                            ordersList.append('<tr><td colspan="4" class="text-center">Không có đơn hàng nào</td></tr>');
+                            return;
+                        }
+
+                        orders.forEach(order => {
+                            const statusClass = getStatusClass(order.OrderStatus);
+                            const statusText = getStatusText(order.OrderStatus);
+
+                            ordersList.append(`
+                                                                        <tr>
+                                                                            <td>#${order.orderId}</td>
+                                                                            <td>${order.orderDate ? new Date(order.orderDate).toLocaleDateString('vi-VN') : ''}</td>
+                                                                            <td>${order.totalAmount.toLocaleString()} đ</td>
+                                                                            <td>
+                                                                                <button class="btn btn-sm btn-info" onclick="showOrderDetails(${order.orderId})">
+                                                                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    `);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading orders:', xhr.responseText);
+                        $('#ordersList').append('<tr><td colspan="4" class="text-center text-danger">Không thể tải danh sách đơn hàng</td></tr>');
+                    }
+                });
+            }
+
+            // Kiểm tra dữ liệu hàm 
+            function validateProfileForm(formData) {
+                if (!formData.fullName || formData.fullName.trim().length < 2) {
+                    toastr.error('Họ tên phải có ít nhất 2 ký tự!');
+                    return false;
+                }
+
+                if (!formData.address || formData.address.trim().length < 5) {
+                    toastr.error('Địa chỉ phải có ít nhất 5 ký tự!');
+                    return false;
+                }
+
+                const phoneRegex = /^0\d{9,10}$/;
+                if (!formData.phoneNumber || !phoneRegex.test(formData.phoneNumber)) {
+                    toastr.error('Số điện thoại không hợp lệ! Phải có 10-11 số và bắt đầu bằng 0.');
+                    return false;
+                }
+
+                if (!formData.dateBirth) {
+                    toastr.error('Vui lòng chọn ngày sinh!');
+                    return false;
+                }
+                const birthDate = new Date(formData.dateBirth);
+                const currentDate = new Date();
+                const minAgeDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 5));
+                if (birthDate >= minAgeDate) {
+                    toastr.error('Độ tuổi tối thiểu 5+');
+                    return false;
+                }
+
+                if (formData.gender === undefined || formData.gender === null || formData.gender === '') {
+                    toastr.error('Vui lòng chọn giới tính!');
+                    return false;
+                }
+
+                return true;
+            }
+
+            $('#updateProfileForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const formData = {
+                    email: $('[name=email]').val(),
+                    fullName: $('[name=fullName]').val().trim(),
+                    address: $('[name=address]').val().trim(),
+                    dateBirth: $('[name=dateBirth]').val(),
+                    phoneNumber: $('[name=phoneNumber]').val().trim(),
+                    gender: parseInt($('[name=gender]').val()) || 0
+                };
+
+                if (!validateProfileForm(formData)) {
+                    return;
+                }
+
+                console.log('Updating profile with data:', formData);
+
+                $.ajax({
+                    url: 'https://localhost:7227/api/auth/update-profile',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        console.log('Profile updated successfully:', response);
+                        toastr.success(response.message || 'Cập nhật thông tin thành công!');
+                    },
+                    error: function (xhr) {
+                        console.error('Error updating profile:', xhr.responseText);
+                        const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Lỗi cập nhật!';
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+
+            $('#avatarInput').on('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    return;
+                }
+
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    toastr.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    toastr.error('Kích thước file không được vượt quá 5MB');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                console.log('Uploading avatar for email:', userEmail);
+
+                $.ajax({
+                    url: `https://localhost:7227/api/auth/upload-image?email=${encodeURIComponent(userEmail)}`,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log('Avatar uploaded successfully:', response);
+                        if (response.imagePath) {
+                            let imageSrc = response.imagePath;
+                            if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+                                imageSrc = '/' + imageSrc;
+                            }
+                            $('#avatar-img').attr('src', imageSrc);
+                            toastr.success(response.message || 'Upload ảnh thành công!');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error uploading avatar:', xhr.responseText);
+                        const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Upload ảnh thất bại!';
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+
+            $('#changePasswordForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const oldPassword = $('[name=oldPassword]').val();
+                const newPassword = $('[name=newPassword]').val();
+                const confirmPassword = $('[name=confirmPassword]').val();
+
+                const specialCharRegex = /[!#$%^&*(),.?":{}|<>]/;
+                if (newPassword.length < 8) {
+                    toastr.error('Mật khẩu mới phải tối thiểu 8 ký tự!');
+                    return;
+                }
+                if (specialCharRegex.test(newPassword)) {
+                    toastr.error('Mật khẩu mới không được chứa ký tự đặc biệt!');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    toastr.error('Mật khẩu xác nhận không trùng khớp!');
+                    return;
+                }
+
+                const requestData = {
+                    email: userEmail,
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                };
+
+                console.log('Changing password for email:', userEmail);
+
+                $.ajax({
+                    url: 'https://localhost:7227/api/auth/change-password',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function (response) {
+                        console.log('Password changed successfully:', response);
+                        toastr.success(response.message || 'Đổi mật khẩu thành công!');
+                        $('#changePasswordForm')[0].reset();
+                    },
+                    error: function (xhr) {
+                        console.error('Error changing password:', xhr.responseText);
+                        const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Lỗi đổi mật khẩu!';
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+        });
+
+        function showOrderDetails(orderId) {
+            console.log('Loading order details for ID:', orderId);
+
+            $.ajax({
+                url: `https://localhost:7227/api/Orders/${orderId}/details`,
+                type: 'GET',
+                success: function (order) {
+                    console.log('Order details loaded:', order);
+
+                    // định dạng dữ liệu
+                    const formattedOrderDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString('vi-VN') : '';
+
+                    let detailsHtml = `
+                                                                <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+                                                                    <div class="modal-dialog modal-lg">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title">Chi tiết đơn hàng #${order.orderId}</h5>
+                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <div class="row mb-3">
+                                                                                    <div class="col-md-6">
+                                                                                        <h6>Thông tin giao hàng</h6>
+                                                                                        <p>Người nhận: ${order.customerName || 'N/A'}</p>
+                                                                                        <p>Địa chỉ: ${order.address || 'N/A'}</p>
+                                                                                        <p>Số điện thoại: ${order.phone || 'N/A'}</p>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <h6>Thông tin đơn hàng</h6>
+                                                                                        <p>Ngày đặt: ${formattedOrderDate}</p>
+                                                                                        <p>Trạng thái: <span class="badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></p>
+                                                                                        <p>Phương thức thanh toán: ${order.paymentMethod === 'BANK' ? 'Thanh toán khi nhận hàng' : 'Thanh toán online'}</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <h6>Sản phẩm</h6>
+                                                                                <table class="table">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Sản phẩm</th>
+                                                                                            <th>Số lượng</th>
+                                                                                            <th>Đơn giá</th>
+                                                                                            <th>Thành tiền</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>`;
+
+                    if (order.orderDetails && order.orderDetails.length > 0) {
+                        order.orderDetails.forEach(detail => {
+                            detailsHtml += `
+                                                                        <tr>
+                                                                            <td>${detail.productName || 'N/A'}</td>
+                                                                            <td>${detail.quantity || 0}</td>
+                                                                            <td>${(detail.unitPrice || 0).toLocaleString()} đ</td>
+                                                                            <td>${((detail.quantity || 0) * (detail.unitPrice || 0)).toLocaleString()} đ</td>
+                                                                        </tr>`;
+                        });
+                    } else {
+                        detailsHtml += '<tr><td colspan="4" class="text-center">Không có sản phẩm</td></tr>';
+                    }
+
+                    detailsHtml += `
+                                                                                    </tbody>
+                                                                                    <tfoot>
+                                                                                        <tr>
+                                                                                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                                                                                            <td><strong>${(order.totalAmount || 0).toLocaleString()} đ</strong></td>
+                                                                                        </tr>
+                                                                                    </tfoot>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>`;
+
+                    // Xóa modal sau khi hiển thị
+                    $('#orderDetailsModal').remove();
+
+                    $('body').append(detailsHtml);
+                    const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+                    modal.show();
+                },
+                error: function (xhr) {
+                    console.error('Error loading order details:', xhr.responseText);
+                    toastr.error('Không thể tải chi tiết đơn hàng');
+                }
+            });
+        }
+    </script>
+}

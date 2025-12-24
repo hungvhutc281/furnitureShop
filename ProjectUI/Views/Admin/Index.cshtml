@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Trang quản lý</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Trang quản lý</li>
+            </ol>
+        </nav>
+    </div>
+   
+
+</main><!-- End #main -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* <script>
+
+    function uploadImage() {
+        var file = document.getElementById('avatarUpload').files[0];
+        var formData = new FormData();
+        formData.append("avatar", file);
+
+        $.ajax({
+            url: '/Admin/UploadAvatar',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var preview = document.getElementById('imagePreview');
+                var modalPreview = document.getElementById('modalImagePreview');
+                var fileNameInput = document.getElementById('fileNameInput');
+
+                // Lấy tên file mà không có phần mở rộng
+                var fileNameWithoutExtension = response.fileName.split('.').slice(0, -1).join('.');
+
+                // Cập nhật ảnh xem trước trên trang chính và trong modal
+                preview.src = '/images/customer/' + response.fileName;
+                modalPreview.src = '/images/customer/' + response.fileName;
+
+                // Cập nhật tên file
+                fileNameInput.value = fileNameWithoutExtension;
+
+                // Gọi hàm enableEdit() để kích hoạt chế độ chỉnh sửa
+                // enableEdit();
+            },
+            error: function () {
+                alert("File upload failed.");
+            }
+        });
+    }
+</script> *@

@@ -1,0 +1,172 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Quản lý nhà cung cấp</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Nhà cung cấp</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách nhà cung cấp</h5>
+
+                        <div class="mb-3">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal">
+                                <i class="bi bi-plus-circle"></i> Thêm Nhà Cung Cấp
+                            </button>
+                            <input id="searchBox" type="text" class="form-control mt-3" placeholder="Tìm kiếm nhà cung cấp theo tên..." />
+                        </div>
+
+                        <table class="table table-striped" id="supplierTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên</th>
+                                    <th>Thông tin liên hệ</th>
+                                    <th>Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="supplierForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="supplierModalLabel">Tạo / Sửa Nhà Cung Cấp</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="supplierId" />
+                    <div class="mb-3">
+                        <label for="supplierName" class="form-label">Tên</label>
+                        <input type="text" class="form-control" id="supplierName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="supplierContact" class="form-label">Thông tin liên hệ</label>
+                        <input type="text" class="form-control" id="supplierContact" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa mục này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiUrl = "https://localhost:7227/api/admin/suppiler";
+
+        function loadSuppliers() {
+            axios.get(apiUrl).then(res => {
+                const rows = res.data.map(s => `
+                            <tr>
+                                <td>${s.supplierId}</td>
+                                <td>${s.supplierName}</td>
+                                <td>${s.contactInfo ?? ''}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editSupplier(${s.supplierId})">Sửa</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteSupplier(${s.supplierId})">Xóa</button>
+                                </td>
+                            </tr>
+                        `).join("");
+                document.querySelector("#supplierTable tbody").innerHTML = rows;
+            });
+        }
+
+        document.getElementById("supplierForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const id = document.getElementById("supplierId").value;
+            const data = {
+                supplierName: document.getElementById("supplierName").value,      
+                contactInfo: document.getElementById("supplierContact").value
+            };
+
+            const action = id ? axios.put(`${apiUrl}/${id}`, data) : axios.post(apiUrl, data);
+            action.then(() => {
+                loadSuppliers();
+                bootstrap.Modal.getInstance(document.getElementById("supplierModal")).hide();
+            });
+        });
+
+        function editSupplier(id) {
+            axios.get(`${apiUrl}/${id}`).then(res => {
+                const supplier = res.data;
+                document.getElementById("supplierId").value = supplier.supplierId;
+                document.getElementById("supplierName").value = supplier.supplierName;
+                document.getElementById("supplierContact").value = supplier.contactInfo;
+                new bootstrap.Modal(document.getElementById("supplierModal")).show();
+            });
+        }
+
+        let deleteId = null;
+        function deleteSupplier(id) {
+            deleteId = id;
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+        document.getElementById('btn-confirm-delete').onclick = function() {
+            if (deleteId !== null) {
+                axios.delete(`${apiUrl}/${deleteId}`).then(() => {
+                    loadSuppliers();
+                    deleteId = null;
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                });
+            }
+        };
+        window.deleteSupplier = deleteSupplier;
+
+        document.getElementById("searchBox").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll("#supplierTable tbody tr").forEach(row => {
+                const name = row.children[1].textContent.toLowerCase();
+                row.style.display = name.includes(keyword) ? "" : "none";
+            });
+        });
+
+        loadSuppliers();
+    </script>
+}

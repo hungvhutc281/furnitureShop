@@ -1,0 +1,48 @@
+@model List<ProjectUI.Controllers.HomeController.NewsDto>
+@{
+    ViewData["Title"] = "Tin tức";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hotNews = Model.FirstOrDefault();
+    var otherNews = Model.Skip(1).ToList();
+}
+
+<div class="container py-4">
+    <h2 class="mb-4" style="font-weight:bold;">Tin nổi bật</h2>
+    @if (hotNews != null)
+    {
+        <div class="row mb-5 align-items-center">
+            <div class="col-md-7">
+                <a href="@Url.Action("ChitietTin", "Home", new { id = hotNews.NewsID })" style="display:block;">
+                    <img src="@hotNews.Image" alt="@hotNews.Title" class="img-fluid rounded shadow" style="max-height:350px;object-fit:cover;width:100%;" />
+                </a>
+            </div>
+            <div class="col-md-5">
+                <div class="mb-2 text-muted">@hotNews.PostedDate.ToString("dd/MM/yyyy")</div>
+                <a href="@Url.Action("ChitietTin", "Home", new { id = hotNews.NewsID })" style="text-decoration:none;color:inherit;">
+                    <h3 style="font-weight:bold;">@hotNews.Title</h3>
+                </a>
+                <div class="mb-2" style="color:#888;font-size:1.1rem;">@hotNews.Author</div>
+                <div class="mb-3" style="font-size:1.1rem;white-space:pre-line;">@((hotNews.Content?.Length > 180) ? hotNews.Content.Substring(0, 180) + "..." : hotNews.Content)</div>
+            </div>
+        </div>
+    }
+    <h3 class="mb-3">Các tin khác</h3>
+    <div class="row g-4">
+        @foreach (var news in otherNews)
+        {
+            <div class="col-md-4 col-12">
+                <a href="@Url.Action("ChitietTin", "Home", new { id = news.NewsID })" style="text-decoration:none;color:inherit;">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@news.Image" alt="@news.Title" class="card-img-top" style="max-height:180px;object-fit:cover;" />
+                        <div class="card-body">
+                            <div class="mb-1 text-muted" style="font-size:0.95rem;">@news.PostedDate.ToString("dd/MM/yyyy")</div>
+                            <h5 class="card-title" style="font-weight:bold;">@news.Title</h5>
+                            <div class="mb-2" style="color:#888;font-size:1rem;">@news.Author</div>
+                            <div class="card-text" style="font-size:1rem;white-space:pre-line;max-height:80px;overflow:hidden;">@((news.Content?.Length > 120) ? news.Content.Substring(0, 120) + "..." : news.Content)</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div> 

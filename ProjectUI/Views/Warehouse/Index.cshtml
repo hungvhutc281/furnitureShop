@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Quản lý kho hàng</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Kho hàng</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách kho hàng</h5>
+
+                        <div class="mb-3">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#warehouseModal">
+                                <i class="bi bi-plus-circle"></i> Thêm Kho Hàng
+                            </button>
+                            <input id="searchBox" type="text" class="form-control mt-3" placeholder="Tìm kiếm kho hàng theo tên..." />
+                        </div>
+
+                        <table class="table table-striped" id="warehouseTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên</th>
+                                    <th>Vị trí</th>
+                                    <th>SĐT</th>
+                                    <th>Tổng kho</th>
+                                    <th>Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="warehouseModal" tabindex="-1" aria-labelledby="warehouseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="warehouseForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="warehouseModalLabel">Tạo / Sửa Kho Hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="warehouseId" />
+                    <div class="mb-3">
+                        <label for="warehouseName" class="form-label">Tên kho</label>
+                        <input type="text" class="form-control" id="warehouseName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Vị trí</label>
+                        <input type="text" class="form-control" id="location" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="phone" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Tổng kho</label>
+                        <input type="number" class="form-control" id="capacity" min="0" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa mục này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiUrl = "https://localhost:7227/api/admin/warehouse"; // Đổi endpoint API tương ứng
+
+        function loadWarehouses() {
+            axios.get(apiUrl).then(res => {
+                const rows = res.data.map(w => `
+                    <tr>
+                        <td>${w.warehouseId}</td>
+                        <td>${w.warehouseName}</td>
+                        <td>${w.location ?? ''}</td>
+                        <td>${w.phone ?? ''}</td>
+                        <td>${w.capacity}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editWarehouse(${w.warehouseId})">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteWarehouse(${w.warehouseId})">Xóa</button>
+                        </td>
+                    </tr>
+                `).join("");
+                document.querySelector("#warehouseTable tbody").innerHTML = rows;
+            });
+        }
+
+        document.getElementById("warehouseForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const id = document.getElementById("warehouseId").value;
+            const data = {
+                warehouseName: document.getElementById("warehouseName").value,
+                location: document.getElementById("location").value,
+                phone: document.getElementById("phone").value,
+                capacity: parseInt(document.getElementById("capacity").value)
+            };
+
+            const action = id ? axios.put(`${apiUrl}/${id}`, data) : axios.post(apiUrl, data);
+            action.then(() => {
+                loadWarehouses();
+                bootstrap.Modal.getInstance(document.getElementById("warehouseModal")).hide();
+            });
+        });
+
+        function editWarehouse(id) {
+            axios.get(`${apiUrl}/${id}`).then(res => {
+                const w = res.data;
+                document.getElementById("warehouseId").value = w.warehouseId;
+                document.getElementById("warehouseName").value = w.warehouseName;
+                document.getElementById("location").value = w.location;
+                document.getElementById("phone").value = w.phone;
+                document.getElementById("capacity").value = w.capacity;
+                new bootstrap.Modal(document.getElementById("warehouseModal")).show();
+            });
+        }
+
+        let deleteId = null;
+        function deleteWarehouse(id) {
+            deleteId = id;
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+        document.getElementById('btn-confirm-delete').onclick = function() {
+            if (deleteId !== null) {
+                axios.delete(`${apiUrl}/${deleteId}`).then(() => {
+                    loadWarehouses();
+                    deleteId = null;
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                });
+            }
+        };
+        window.deleteWarehouse = deleteWarehouse;
+
+        document.getElementById("searchBox").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll("#warehouseTable tbody tr").forEach(row => {
+                const name = row.children[1].textContent.toLowerCase();
+                row.style.display = name.includes(keyword) ? "" : "none";
+            });
+        });
+
+        loadWarehouses();
+    </script>
+}

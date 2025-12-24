@@ -1,0 +1,262 @@
+@{
+    ViewData["Title"] = "Quản lý tin tức";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Quản lý tin tức</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="News" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Tin tức</li>
+            </ol>
+        </nav>
+    </div>
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách tin tức</h5>
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newsModal" onclick="openCreateModal()">
+                                <i class="bi bi-plus-circle"></i> Thêm Tin Tức
+                            </button>
+                            <input id="searchBox" type="text" class="form-control w-50" placeholder="Tìm kiếm tin tức theo tiêu đề..." />
+                        </div>
+                        <table class="table table-striped align-middle" id="newsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th style="width: 220px;">Tiêu đề</th>
+                                    <th style="width: 150px;">Tác giả</th>
+                                    <th style="width: 180px;">Ngày đăng</th>
+                                    <th style="width: 220px;">Nội dung</th>
+                                    <th style="width: 160px;">Ảnh</th>
+                                    <th style="width: 140px;">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal Thêm/Sửa Tin Tức -->
+<div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="newsForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newsModalLabel">Tạo / Sửa Tin Tức</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="newsId" />
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control form-control-lg" id="title" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Tác giả</label>
+                                <input type="text" class="form-control form-control-lg" id="author" required />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Nội dung</label>
+                                <textarea class="form-control form-control-lg" id="content" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Chọn ảnh</label>
+                                <input type="file" class="form-control" id="imageFile" accept="image/*" />
+                                <img id="previewImage" src="" style="max-width:220px;max-height:180px;display:none;margin-top:10px;border-radius:8px;box-shadow:0 2px 8px #ccc;" />
+                            </div>
+                            <input type="hidden" id="image" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success btn-lg">Lưu</button>
+                    <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa tin tức này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xem nội dung đầy đủ -->
+<div class="modal fade" id="fullContentModal" tabindex="-1" aria-labelledby="fullContentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fullContentModalLabel">Nội dung đầy đủ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="fullContentText" style="white-space:pre-line;font-size:1.1rem;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiUrl = "https://localhost:7227/api/News";
+        function loadNews() {
+            axios.get(apiUrl).then(res => {
+                const rows = res.data.map(n => {
+                    let shortContent = n.content;
+                    let showEye = false;
+                    if (n.content && n.content.length > 100) {
+                        shortContent = n.content.substring(0, 100) + '...';
+                        showEye = true;
+                    }
+                    return `<tr>
+                        <td><b>${n.newsID}</b></td>
+                        <td style="font-size:1.1rem;">${n.title}</td>
+                        <td>${n.author}</td>
+                        <td>${new Date(n.postedDate).toLocaleString()}</td>
+                        <td style="max-width:300px;white-space:pre-line;overflow:auto;">
+                            ${shortContent}
+                            ${showEye ? `<button class='btn btn-link p-0 ms-2' title='Xem nội dung đầy đủ' onclick='showFullContent(${JSON.stringify(n.content)})'><i class='bi bi-eye'></i></button>` : ''}
+                        </td>
+                        <td>${n.image ? `<img src='${n.image}' style='max-width:120px;max-height:90px;border-radius:6px;box-shadow:0 2px 8px #ccc;'/>` : ''}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editNews(${n.newsID})">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteNews(${n.newsID})">Xóa</button>
+                        </td>
+                    </tr>`;
+                }).join("");
+                document.querySelector("#newsTable tbody").innerHTML = rows;
+            });
+        }
+
+        document.getElementById("imageFile").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("image").value = e.target.result;
+                    document.getElementById("previewImage").src = e.target.result;
+                    document.getElementById("previewImage").style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById("newsForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const id = document.getElementById("newsId").value;
+            const data = {
+                title: document.getElementById("title").value,
+                content: document.getElementById("content").value,
+                image: document.getElementById("image").value,
+                author: document.getElementById("author").value
+            };
+            const action = id ? axios.put(`${apiUrl}/${id}`, data) : axios.post(apiUrl, data);
+            action.then(() => {
+                loadNews();
+                bootstrap.Modal.getInstance(document.getElementById("newsModal")).hide();
+            });
+        });
+
+        function openCreateModal() {
+            document.getElementById("newsId").value = "";
+            document.getElementById("title").value = "";
+            document.getElementById("content").value = "";
+            document.getElementById("image").value = "";
+            document.getElementById("imageFile").value = "";
+            document.getElementById("previewImage").src = "";
+            document.getElementById("previewImage").style.display = "none";
+            document.getElementById("author").value = "";
+            document.getElementById("newsModalLabel").innerText = "Thêm Tin Tức";
+        }
+
+        function editNews(id) {
+            axios.get(`${apiUrl}/${id}`).then(res => {
+                const n = res.data;
+                document.getElementById("newsId").value = n.newsID;
+                document.getElementById("title").value = n.title;
+                document.getElementById("content").value = n.content;
+                document.getElementById("image").value = n.image;
+                document.getElementById("imageFile").value = "";
+                if(n.image) {
+                    document.getElementById("previewImage").src = n.image;
+                    document.getElementById("previewImage").style.display = "block";
+                } else {
+                    document.getElementById("previewImage").src = "";
+                    document.getElementById("previewImage").style.display = "none";
+                }
+                document.getElementById("author").value = n.author;
+                document.getElementById("newsModalLabel").innerText = "Sửa Tin Tức";
+                new bootstrap.Modal(document.getElementById("newsModal")).show();
+            });
+        }
+
+        let deleteId = null;
+        function deleteNews(id) {
+            deleteId = id;
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+        document.getElementById('btn-confirm-delete').onclick = function() {
+            if (deleteId !== null) {
+                axios.delete(`${apiUrl}/${deleteId}`).then(() => {
+                    loadNews();
+                    deleteId = null;
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                });
+            }
+        };
+        window.deleteNews = deleteNews;
+        window.editNews = editNews;
+        window.openCreateModal = openCreateModal;
+
+        document.getElementById("searchBox").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll("#newsTable tbody tr").forEach(row => {
+                const title = row.children[1].textContent.toLowerCase();
+                row.style.display = title.includes(keyword) ? "" : "none";
+            });
+        });
+
+        window.showFullContent = function(content) {
+            document.getElementById('fullContentText').textContent = content;
+            new bootstrap.Modal(document.getElementById('fullContentModal')).show();
+        }
+
+        loadNews();
+    </script>
+} 

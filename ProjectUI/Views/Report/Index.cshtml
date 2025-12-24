@@ -1,0 +1,184 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo Thống kê";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<main id="main" class="main ">
+
+    <div class="pagetitle">
+        <h1>Báo cáo Thống kê</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/Admin">Trung tâm điều khiển</a></li>
+                <li class="breadcrumb-item active">Báo cáo</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section dashboard">
+
+        <div class="row">
+            <div class="col-md-4 col-sm-6 col-12">
+                <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số người dùng</h5>
+                        <p class="card-text" id="userCount">Đang tải...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-12">
+                <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sản phẩm bán ra hôm nay</h5>
+                        <p class="card-text" id="dailySales">Đang tải...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-12">
+                <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sản phẩm bán ra tháng này</h5>
+                        <p class="card-text" id="monthlySales">Đang tải...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Doanh thu hôm nay (Chưa ship)</h5>
+                        <p class="card-text" id="dailyRevenue">Đang tải...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sản phẩm bán chạy hôm nay</h5>
+                        <ul id="dailyBestSellers" class="list-group list-group-flush">
+                            <li class="list-group-item">Đang tải...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sản phẩm bán chạy tháng này</h5>
+                        <ul id="monthlyBestSellers" class="list-group list-group-flush">
+                            <li class="list-group-item">Đang tải...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+@* ... Phần HTML phía trên giữ nguyên ... *@
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const baseUrl = 'https://localhost:7227'; // Địa chỉ cơ sở của API
+
+            //Lấy tài khoản người dùng
+            $.get(baseUrl + "/api/admin/stats/user-count", function (data) {
+                $("#userCount").text(data);
+            }).fail(function() {
+                $("#userCount").text("Lỗi tải dữ liệu");
+            });
+
+            // Lấy đơn hàng bán chạy
+            $.get(baseUrl + "/api/admin/stats/daily-sales", function (data) {
+                $("#dailySales").text(data);
+            }).fail(function() {
+                $("#dailySales").text("Lỗi tải dữ liệu");
+            });
+
+            // lấy đơn hàng bán chạy theo tháng
+            $.get(baseUrl + "/api/admin/stats/monthly-sales", function (data) {
+                $("#monthlySales").text(data);
+            }).fail(function() {
+                $("#monthlySales").text("Lỗi tải dữ liệu");
+            });
+
+            // lấy doanh thu thei ngày
+            $.get(baseUrl + "/api/admin/stats/daily-revenue", function (data) {
+                const revenue = typeof data === 'number' ? data : 0;
+                $("#dailyRevenue").text(revenue.toLocaleString('vi-VN') + ' đ');
+            }).fail(function() {
+                $("#dailyRevenue").text("Lỗi tải dữ liệu");
+            });
+
+            // Lấy sản phẩm bán chạy nhâtd
+            $.get(baseUrl + "/api/admin/stats/daily-best-sellers", function (data) {
+                const list = $("#dailyBestSellers");
+                list.empty();
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        // định dạng
+                        const formattedPrice = (item.price ?? 0).toLocaleString('vi-VN') + ' đ';
+                        const imgSrc = item.image ? (item.image.startsWith('data:image') ? item.image : baseUrl + item.image) : '';
+                        const imgTag = imgSrc ? `<img src="${imgSrc}" alt="${item.productName}" style="width: 50px; height: auto; margin-right: 10px; border-radius: 5px;">` : '';
+
+                        list.append(`
+                            <li class="list-group-item d-flex align-items-center">
+                                ${imgTag}
+                                <div>
+                                    <b>${item.productName}</b> (${item.totalQuantitySold} sản phẩm)<br>
+                                    Giá: ${formattedPrice}
+                                </div>
+                            </li>
+                        `);
+                    });
+                } else {
+                    list.append('<li class="list-group-item">Không có dữ liệu</li>');
+                }
+            }).fail(function() {
+                 const list = $("#dailyBestSellers");
+                 list.empty();
+                 list.append('<li class="list-group-item text-danger">Lỗi tải dữ liệu</li>');
+            });
+
+             //lấy các sản phẩn bán chạy theo tháng
+            $.get(baseUrl + "/api/admin/stats/monthly-best-sellers", function (data) {
+                const list = $("#monthlyBestSellers");
+                list.empty();
+                 if (data && data.length > 0) {
+                    data.forEach(item => {
+                        //định dạng giá tiền đơn vị Đ
+                         const formattedPrice = (item.price ?? 0).toLocaleString('vi-VN') + ' đ';
+                        const imgSrc = item.image ? (item.image.startsWith('data:image') ? item.image : baseUrl + item.image) : '';
+                        const imgTag = imgSrc ? `<img src="${imgSrc}" alt="${item.productName}" style="width: 50px; height: auto; margin-right: 10px; border-radius: 5px;">` : '';
+
+                         list.append(`
+                             <li class="list-group-item d-flex align-items-center">
+                                ${imgTag}
+                                 <div>
+                                     <b>${item.productName}</b> (${item.totalQuantitySold} sản phẩm)<br>
+                                     Giá: ${formattedPrice}
+                                 </div>
+                             </li>
+                         `);
+                    });
+                } else {
+                    list.append('<li class="list-group-item">Không có dữ liệu</li>');
+                }
+            }).fail(function() {
+                 const list = $("#monthlyBestSellers");
+                 list.empty();
+                 list.append('<li class="list-group-item text-danger">Lỗi tải dữ liệu</li>');
+            });
+
+        });
+    </script>
+}
+

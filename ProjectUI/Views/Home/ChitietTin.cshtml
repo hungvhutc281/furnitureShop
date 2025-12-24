@@ -1,0 +1,20 @@
+@model ProjectUI.Controllers.HomeController.NewsDto
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-12">
+            <h1 class="mb-3" style="font-weight:bold; font-size:2.2rem; color:#222;">@Model.Title</h1>
+            <div class="mb-2" style="font-size:1.1rem;">
+                <span class="badge bg-warning text-dark me-2" style="font-size:1rem;">@Model.Author</span>
+                <span class="text-muted">@Model.PostedDate.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+            <img src="@Model.Image" alt="@Model.Title" class="img-fluid rounded shadow my-4" style="max-height:400px;object-fit:cover;width:100%;" />
+            <div style="font-size:1.15rem;white-space:pre-line;line-height:1.7;">
+                @Model.Content
+            </div>
+        </div>
+    </div>
+</div> 

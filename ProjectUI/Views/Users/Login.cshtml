@@ -1,0 +1,485 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="/css/Login.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/LogoHH.png" />
+    <style>
+        /* Tối ưu button trong modal quên mật khẩu */
+        #forgotPasswordModal .submit {
+            width: 50%;
+            min-width: 120px;
+            max-width: 90%;
+            height: 30px;
+            min-height: 30px;
+            font-size: 15px;
+            border-radius: 20px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            box-shadow: none;
+            margin-bottom: 8px;
+            padding: 0 0.75rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+            #forgotPasswordModal .submit:hover {
+                box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+                transform: translateY(-2px) scale(1.04);
+                filter: brightness(1.05);
+            }
+    </style>
+
+</head>
+<body>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="cont">
+        <div class="form sign-in">
+            <h2> Nội thất H & H Luxury xin chào !</h2>
+            @if (ViewBag.Error != null)
+            {
+                <div style="color:red; text-align:center; margin-bottom:15px;">@ViewBag.Error</div>
+            }
+            <form asp-action="Login" asp-controller="Users" method="post" id="loginForm">
+                <br />
+                <br />
+                <label class="horizontal">
+                    <span>Tài khoản</span>
+                    <input type="email" name="email" id="loginEmail" required />
+                </label>
+                <label class="horizontal">
+                    <span>Mật khẩu</span>
+                    <input type="password" name="password" id="loginPassword" required />
+                </label>
+                <p class="forgot-pass" style="cursor:pointer;color:#b89d72;" onclick="showForgotPasswordModal()">Bạn quên mật khẩu ?</p>
+                <button type="submit" class="submit">Đăng nhập</button>
+            </form>
+            <form id="backHome" action="/" method="get">
+                <button type="submit" class="back-btn">Về trang chủ</button>
+            </form>
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                    <h3>Bạn chưa có tài khoản ? Đăng ký ngay</h3>
+                </div>
+                <div class="img__text m--in">
+                    <h3>Bạn đã có tài khoản ? Đăng nhập ngay</h3>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">Đăng ký</span>
+                    <span class="m--in">Đăng nhập</span>
+                </div>
+            </div>
+            <div class="form sign-up">
+                <h2>Tạo tài khoản</h2>
+                <div id="registrationFields">
+                    <form id="registerForm">
+                        <label class="horizontal">
+                            <span>Tài khoản</span>
+                            <input type="text" id="registerUsername" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Mật khẩu</span>
+                            <input type="password" id="registerPassword" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Xác nhận Mật khẩu</span>
+                            <input type="password" id="registerConfirmPassword" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Địa chỉ</span>
+                            <input type="text" id="registerAddress" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Số điện thoại</span>
+                            <input type="text" id="registerPhoneNumber" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Ngày sinh</span>
+                            <input type="date" id="registerDateOfBirth" />
+                        </label>
+                        <label class="horizontal">
+                            <span>Giới tính</span>
+                            <select id="registerGender">
+                                <option value="0">Nam</option>
+                                <option value="1">Nữ</option>
+                                <option value="2">Riêng tư</option>
+                            </select>
+                        </label>
+                        <label class="horizontal">
+                            <span>Email đăng ký</span>
+                            <input type="email" id="registerEmail" />
+                        </label>
+                        <button type="submit" class="submit">Đăng ký</button>
+                    </form>
+                    <p id="registerMessage" style="color: red;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Quên mật khẩu -->
+    <div id="forgotPasswordModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);">
+        <div style="
+            background:#fff;
+            padding:30px 20px;
+            width:350px;
+            max-width:90vw;
+            border-radius:8px;
+            position:absolute;
+            left:50%;
+            top:50%;
+            transform:translate(-50%,-50%);
+            box-shadow:0 4px 32px rgba(0,0,0,0.18);
+        ">
+            <h3 style="text-align:center;margin-bottom:18px;">Quên mật khẩu</h3>
+            <div id="forgotStep1">
+                <input type="email" id="forgotEmail" class="form-control" placeholder="Nhập email đã đăng ký" style="margin-bottom:10px;" />
+                <button onclick="sendForgotOtp()" class="submit">Gửi mã OTP</button>
+                <button onclick="closeForgotModal()" class="submit" style="background:#ccc;color:#333;">Huỷ</button>
+            </div>
+            <div id="forgotStep2" style="display:none;">
+                <input type="text" id="forgotOtp" class="form-control" placeholder="Nhập mã OTP" style="margin-bottom:10px;" />
+                <button onclick="verifyForgotOtp()" class="submit">Xác nhận OTP</button>
+                <button onclick="closeForgotModal()" class="submit" style="background:#ccc;color:#333;">Huỷ</button>
+            </div>
+            <div id="forgotStep3" style="display:none;">
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label for="forgotNewPassword" style="font-size:14px; color:#444;">Mật khẩu mới</label>
+                    <input type="password" id="forgotNewPassword" class="form-control" />
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label for="forgotConfirmPassword" style="font-size:14px; color:#444;">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="forgotConfirmPassword" class="form-control" />
+                </div>
+                <button onclick="resetPassword()" class="submit">Đặt lại mật khẩu</button>
+                <button onclick="closeForgotModal()" class="submit" style="background:#ccc;color:#333;">Huỷ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        if (typeof toastr !== 'undefined') {
+            toastr.options = {
+                "closeButton": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "2000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+        } else {
+            console.error("Lỗi tải!!!");
+        }
+
+        document.querySelector('.img__btn').addEventListener('click', function () {
+            document.querySelector('.cont').classList.toggle('s--signup');
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const address = document.getElementById('registerAddress').value;
+            const phoneNumber = document.getElementById('registerPhoneNumber').value;
+            const email = document.getElementById('registerEmail').value;
+            const datebirth = document.getElementById('registerDateOfBirth').value;
+            const gender = document.getElementById('registerGender').value;
+
+            // Kiểm tra các trường bắt buộc
+            if (!email || !username || !password || !address || !phoneNumber || !datebirth) {
+                toastr.error("Vui lòng điền đầy đủ thông tin trong form");
+                return;
+            }
+
+            // Kiểm tra độ dài và ký tự đặc biệt của mật khẩu
+            const specialCharRegex = /[!#$%^&*(),.?":{}|<>]/; 
+            if (password.length < 8) {
+                toastr.error("Mật khẩu phải tối thiểu  8 ký tự !");
+                return;
+            }
+            if (specialCharRegex.test(password)) {
+                toastr.error("Mật khẩu không được chứa ký tự đặc biệt !");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                toastr.error("Mật khẩu xác nhận không trùng khớp !");
+                return;
+            }
+
+            // Kiểm tra ngày sinh
+            const birthDate = new Date(datebirth);
+            const currentDate = new Date(); 
+            const minAgeDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 5));
+            
+            if (birthDate >= minAgeDate) {
+                toastr.error("Độ tuổi tối thiểu 5 +");
+                return;
+            }
+
+            const userData = {
+                Email: email,
+                FullName: username,
+                Password: password,
+                Address: address,
+                PhoneNumber: phoneNumber,
+                DateBirth: datebirth,
+                Gender: parseInt(gender), // Chuyển giá trị select thành số
+            };
+
+            try {
+                toastr.info("Đang đăng ký...");
+                const response = await fetch('https://localhost:7227/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData),
+                });
+
+                if (response.ok) {
+                    toastr.success("Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP.");
+                    const { value: otp } = await Swal.fire({
+                        title: "Xác thực Email",
+                        html: "Một mã OTP đã được gửi đến email của bạn. Vui lòng nhập mã dưới đây để xác thực.",
+                        input: "text",
+                        inputPlaceholder: "Nhập mã OTP",
+                        showCancelButton: true,
+                        confirmButtonText: "Xác thực",
+                        cancelButtonText: "Hủy",
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return "Vui lòng nhập mã OTP!";
+                            }
+                        }
+                    });
+
+                    if (otp) {
+                        await verifyOtp(email, otp);
+                    } else {
+                        toastr.warning("Bạn đã hủy xác thực OTP.");
+                        document.querySelector('.cont').classList.remove('s--signup');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    toastr.error(errorText);
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API đăng ký:', error);
+                toastr.error('Lỗi khi đăng ký.');
+            }
+        });
+
+        async function verifyOtp(email, otp) {
+            try {
+                toastr.info("Đang xác thực OTP...");
+                const response = await fetch('https://localhost:7227/api/auth/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ Email: email, Otp: otp }),
+                });
+
+                if (response.ok) {
+                    const successText = await response.text();
+                    toastr.success(successText);
+                    setTimeout(() => {
+                        document.querySelector('.cont').classList.remove('s--signup');
+                    }, 2000);
+                } else {
+                    const errorText = await response.text();
+                    toastr.error(errorText);
+                    // Hiển thị lại modal nếu OTP không hợp lệ
+                    const { value: newOtp } = await Swal.fire({
+                        title: "Xác thực Email",
+                        html: errorText + "<br>Vui lòng thử lại.",
+                        input: "text",
+                        inputPlaceholder: "Nhập mã OTP",
+                        showCancelButton: true,
+                        confirmButtonText: "Xác thực",
+                        cancelButtonText: "Hủy",
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return "Vui lòng nhập mã OTP!";
+                            }
+                        }
+                    });
+
+                    if (newOtp) {
+                        await verifyOtp(email, newOtp);
+                    } else {
+                        toastr.warning("Bạn đã hủy xác thực OTP.");
+                        document.querySelector('.cont').classList.remove('s--signup');
+                    }
+                }
+            } catch (error) {
+                console.error('Lỗi khi gọi API xác thực OTP:', error);
+                toastr.error('Lỗi khi xác thực OTP.');
+            }
+        }
+
+        // Lưu email vào localStorage trước khi submit để dùng lại sau khi đăng nhập thành công
+        var loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function() {
+                var email = document.getElementById('loginEmail').value;
+                if (email) localStorage.setItem('lastLoginEmail', email);
+            });
+        }
+
+        $(function() {
+            var toastMsg = '@TempData["Toast"]';
+            var toastType = '@TempData["ToastType"]';
+            if (toastMsg && toastMsg !== '') {
+                if (toastType === 'error') toastr.error(toastMsg);
+                else if (toastType === 'success') toastr.success(toastMsg);
+                else if (toastType === 'warning') toastr.warning(toastMsg);
+                else toastr.info(toastMsg);
+            }
+            var loginSuccess = '@(ViewBag.LoginSuccess != null && ViewBag.LoginSuccess.ToString().ToLower() == "true" ? "true" : "false")';
+            if (loginSuccess === 'true') {
+                // Lấy email vừa đăng nhập từ localStorage
+                var email = localStorage.getItem('lastLoginEmail');
+                if (email) {
+                    fetch('https://localhost:7227/api/auth/get-user-by-email?email=' + encodeURIComponent(email))
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.userId) {
+                                localStorage.setItem('userId', data.userId);
+                                localStorage.setItem('userEmail', data.email);
+                            }
+                            setTimeout(function() {
+                                window.location.href = '/Home/Index';
+                            }, 1000);
+                        })
+                        .catch(() => {
+                            setTimeout(function() {
+                                window.location.href = '/Home/Index';
+                            }, 1000);
+                        });
+                } else {
+                    setTimeout(function() {
+                        window.location.href = '/Home/Index';
+                    }, 1000);
+                }
+            }
+        });
+
+        function showForgotPasswordModal() {
+            $('#forgotPasswordModal').show();
+            $('#forgotStep1').show();
+            $('#forgotStep2').hide();
+            $('#forgotStep3').hide();
+            $('#forgotEmail').val('');
+            $('#forgotOtp').val('');
+            $('#forgotNewPassword').val('');
+            $('#forgotConfirmPassword').val('');
+        }
+        function closeForgotModal() {
+            $('#forgotPasswordModal').hide();
+        }
+        function sendForgotOtp() {
+            const email = $('#forgotEmail').val();
+            if (!email) {
+                toastr.error('Vui lòng nhập email!');
+                return;
+            }
+            $.ajax({
+                url: 'https://localhost:7227/api/auth/forgot-password',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email }),
+                success: function (res) {
+                    toastr.success(res);
+                    $('#forgotStep1').hide();
+                    $('#forgotStep2').show();
+                    $('#forgotStep3').hide();
+                },
+                error: function (xhr) {
+                    toastr.error(xhr.responseText || 'Lỗi gửi OTP!');
+                }
+            });
+        }
+        let otpVerified = false;
+        function verifyForgotOtp() {
+            const email = $('#forgotEmail').val();
+            const otp = $('#forgotOtp').val();
+            if (!otp) {
+                toastr.error('Vui lòng nhập mã OTP!');
+                return;
+            }
+            // Gọi API verify-otp (tận dụng API đã có)
+            $.ajax({
+                url: 'https://localhost:7227/api/auth/verify-otp',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email, otp }),
+                success: function (res) {
+                    toastr.success('Xác thực OTP thành công!');
+                    $('#forgotStep1').hide();
+                    $('#forgotStep2').hide();
+                    $('#forgotStep3').show();
+                    otpVerified = true;
+                },
+                error: function (xhr) {
+                    toastr.error(xhr.responseText || 'OTP không hợp lệ hoặc đã hết hạn!');
+                }
+            });
+        }
+        function resetPassword() {
+            const email = $('#forgotEmail').val();
+            const newPassword = $('#forgotNewPassword').val();
+            const confirmPassword = $('#forgotConfirmPassword').val();
+            if (!otpVerified) {
+                toastr.error('Bạn cần xác thực OTP trước!');
+                return;
+            }
+            if (!newPassword || !confirmPassword) {
+                toastr.error('Vui lòng nhập đủ thông tin!');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                toastr.error('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+            $.ajax({
+                url: 'https://localhost:7227/api/auth/reset-password',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email, otp: 'VERIFIED', newPassword }),
+                success: function (res) {
+                    toastr.success(res);
+                    setTimeout(() => {
+                        closeForgotModal();
+                        otpVerified = false;
+                    }, 1500);
+                },
+                error: function (xhr) {
+                    toastr.error(xhr.responseText || 'Lỗi đặt lại mật khẩu!');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

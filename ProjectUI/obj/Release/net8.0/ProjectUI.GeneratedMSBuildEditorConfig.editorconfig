@@ -1,0 +1,135 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = ProjectUI
+build_property.RootNamespace = ProjectUI
+build_property.ProjectDir = D:\VietCV\DỰ_ÁN_GIT_ĐẨY_CV\furnitureShop\ProjectUI\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\VietCV\DỰ_ÁN_GIT_ĐẨY_CV\furnitureShop\ProjectUI
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Account/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Admin/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Cart/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Category/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Comment/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29tbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/About.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/ChitietTin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDaGl0aWV0VGluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/Contact.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb250YWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/Order.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxPcmRlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/Products.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcm9kdWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Home/Tintuc.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxUaW50dWMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/ManagerOrder/OrderManagement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFuYWdlck9yZGVyXE9yZGVyTWFuYWdlbWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/News/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmV3c1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/News/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmV3c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Order/Checkout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJcQ2hlY2tvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/ProductImage/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdEltYWdlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Product/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Product/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Report/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Supplier/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VwcGxpZXJcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Users/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Users/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcUHJvZmlsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Warehouse/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FyZWhvdXNlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/Wishlist/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lzaGxpc3RcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/VietCV/DỰ_ÁN_GIT_ĐẨY_CV/furnitureShop/ProjectUI/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

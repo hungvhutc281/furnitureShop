@@ -1,0 +1,248 @@
+﻿@model ProjectUI.Controllers.NewsDto
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Các kiểu hiện có cho chi tiết tin tức */
+    .news-detail h1.news-title {
+        font-size: 2.5rem; /* Tiêu đề lớn hơn */
+        margin-bottom: 20px; /* Khoảng cách bên dưới tiêu đề lớn hơn */
+        color: #333; /* Màu tiêu đề tối hơn */
+    }
+
+    .news-detail .news-meta {
+        font-size: 1rem; /* Kích thước phông chữ meta chuẩn */
+        color: #777; /* Làm xám thông tin meta */
+        margin-bottom: 30px; /* Khoảng cách bên dưới meta lớn hơn */
+    }
+
+    .news-detail .news-image img {
+        display: block; /* Căn giữa hình ảnh */
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 8px; /* Góc hơi bo tròn */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng mờ tinh tế */
+    }
+
+    /* --- Cập nhật kiểu cho các đoạn nội dung tin tức --- */
+    .news-content p {
+        font-size: 1.1rem; /* Văn bản lớn hơn một chút để dễ đọc */
+        line-height: 1.7; /* Cải thiện khoảng cách dòng */
+        color: #555; /* Màu văn bản sáng hơn một chút */
+        margin-bottom: 20px; /* Khoảng cách giữa các đoạn văn */
+        text-align: justify; /* Căn chỉnh văn bản để trông đẹp hơn */
+        /* Xóa mọi thuộc tính hiển thị/tràn trước đó nếu chúng xung đột */
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        -webkit-box-orient: unset !important;
+        overflow: visible !important;
+    }
+
+    /* --- Kiểu cho các tiêu đề phụ tiềm năng trong nội dung (tùy chọn, dựa trên cấu trúc nội dung) --- */
+    /* Nếu nội dung của bạn sử dụng các dấu hiệu cụ thể cho các tiêu đề phụ (ví dụ: bắt đầu bằng ##), bạn có thể thêm kiểu ở đây */
+
+    /* Kiểu cho phần "Tin tức khác" */
+    #other-news {
+        margin-top: 60px; /* Thêm khoảng trống phía trên các tin tức khác */
+        padding-top: 30px;
+        border-top: 1px solid #eee; /* Thêm một dòng tinh tế phía trên phần */
+    }
+
+        #other-news h4 {
+            text-transform: uppercase;
+            margin-bottom: 30px; /* Thêm khoảng trống bên dưới tiêu đề */
+            font-size: 1.5rem; /* Tiêu đề lớn hơn cho phần này */
+            color: #333;
+            border-bottom: none; /* Xóa dòng bên dưới tiêu đề */
+            padding-bottom: 0;
+        }
+
+        #other-news .post-item {
+            border: 1px solid #eee; /* Đường viền xung quanh mỗi mục tin tức */
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0,3 giây ease, box-shadow 0,3 giây ease; /* Chuyển tiếp mượt mà */
+            background-color: #fff; /* Nền trắng để tạo độ tương phản */
+        }
+
+            #other-news .post-item:hover {
+                transform: translateY(-5px); /* Hiệu ứng nâng khi di chuột qua */
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Bóng đổ rõ nét hơn khi di chuột qua */
+            }
+
+            #other-news .post-item .post-image img {
+                border-bottom-left-radius: 0; /* Không có bán kính đường viền ở dưới cùng của hình ảnh */
+                border-bottom-right-radius: 0;
+                aspect-ratio: 3 / 2; /* Duy trì tỷ lệ khung hình */
+                object-fit: cover;
+            }
+
+            #other-news .post-item .post-content {
+                padding: 15px; /* Đệm bên trong hộp nội dung */
+            }
+
+        #other-news .post-meta {
+            font-size: 0.9rem; /* Thông tin meta nhỏ hơn trong other news */
+            color: #777;
+        }
+
+        #other-news .post-title {
+            margin-bottom: 10px; /* Khoảng cách bên dưới tiêu đề trong other news */
+        }
+
+            #other-news .post-title a {
+                font-size: 1.1rem; /* Kích thước tiêu đề trong other news */
+                font-weight: 600;
+                color: #333; /* Màu tiêu đề tối */
+                transition: color 0.3s ease; /* Chuyển màu khi di chuột qua */
+                text-decoration: none; /* Xóa gạch chân */
+                display: block; /* Làm cho toàn bộ khối có thể nhấp/di chuột qua */
+            }
+
+        #other-news .post-item:hover .post-title a {
+            color: #FFA500; /* Tô sáng màu khi di chuột qua */
+        }
+
+        #other-news .post-content p {
+            font-size: 1rem; /* Thu nhỏ văn bản đoạn văn trong other news */
+            line-height: 1.5;
+            display: -webkit-box; /* Giới hạn dòng */
+            -webkit-line-clamp: 3; /* Cho phép tối đa 3 dòng */
+            -webkit-box-orient: dọc;
+            overflow: ẩn;
+            text-align: trái; /* Căn chỉnh văn bản sang trái */
+            margin-bottom: 10px; /* Khoảng cách bên dưới đoạn văn */
+            color: #555;
+        }
+
+        #other-news .btn {
+            margin-top: 10px; /* Khoảng cách phía trên nút "Đọc thêm" */
+        }
+
+</style>
+
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <article class="news-detail">
+                <h1 class="news-title text-center mb-4">@Model.Title</h1>
+                <div class="news-meta text-center text-muted mb-4">
+                    Đăng bởi: @Model.Author vào ngày @Model.PostedDate.ToString("dd/MM/yyyy")
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Image))
+                {
+                    var imgSrc = Model.Image.StartsWith("data:") ? Model.Image : $"https://localhost:7227{Model.Image}";
+                    <div class="news-image text-center mb-4">
+                        <img src="@imgSrc" class="img-fluid" alt="@Model.Title" style="max-height: 400px; object-fit: cover;">
+                    </div>
+                }
+                <div class="news-content">
+                    @{
+                        var paragraphs = Model.Content?.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    }
+
+                    @if (paragraphs != null)
+                    {
+                        foreach (var para in paragraphs)
+                        {
+                            if (!string.IsNullOrWhiteSpace(para))
+                            {
+                                <p>@para</p>
+                            }
+                        }
+                    }
+                </div>
+            </article>
+            <div class="text-center mt-5">
+                <a asp-action="Tintuc" asp-controller="Home" class="btn btn-primary rounded-pill px-4">Quay lại danh sách tin tức</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-3" id="other-news">
+        <div class="col-12">
+            <h4>Tin tức khác</h4>
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="other-news-list">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function loadOtherNews() {
+                $.ajax({
+                    url: 'https://localhost:7227/api/News/latest', 
+                    method: 'GET',
+                    success: function (news) {
+                        const otherNewsContainer = $('#other-news-list');
+                        otherNewsContainer.empty(); 
+                        const currentNewsId = @Model.NewsID;
+                        const filteredNews = news.filter(item => item.newsID !== currentNewsId);
+
+                        if (filteredNews.length === 0) {
+                            otherNewsContainer.html('<div class="col-12"><p class="text-center">Không có tin tức khác để hiển thị.</p></div>');
+                            return;
+                        }
+
+                        const newsToDisplay = filteredNews.slice(0, 3);
+
+
+                        newsToDisplay.forEach(function (item) {
+                            const date = new Date(item.postedDate).toLocaleDateString('vi-VN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+
+                            const imgSrc = item.image && item.image.startsWith('data:') ? item.image : `https://localhost:7227${item.image}`;
+
+                            const newsHtml = `
+                                        <div class="col mb-4">
+                                            <article class="post-item h-100">
+                                                <div class="post-image position-relative overflow-hidden">
+                                                    <a href="/News/Details/${item.newsID}" class="d-block">
+                                                        <img src="${imgSrc}" alt="${item.title}"
+                                                             class="img-fluid w-100 h-100"
+                                                             style="object-fit: cover;">
+                                                    </a>
+                                                </div>
+                                                <div class="post-content">
+                                                    <div class="post-meta text-uppercase text-muted mb-2">
+                                                         <span class="post-author">${item.author}</span> /
+                                                        <span class="post-date">${date}</span>
+                                                    </div>
+                                                    <h5 class="post-title mb-2">
+                                                        <a href="/News/Details/${item.newsID}" class="text-dark text-decoration-none">
+                                                            ${item.title}
+                                                        </a>
+                                                    </h5>
+                                                     <p class="text-muted">${item.content}</p>
+                                                      <a href="/News/Details/${item.newsID}" class="btn btn-outline-primary rounded-pill btn-sm mt-2">Đọc thêm</a>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    `;
+                            otherNewsContainer.append(newsHtml);
+                        });
+                    },
+                    error: function () {
+                        $('#other-news-list').html('<div class="col-12"><p class="text-center text-danger">Không thể tải tin tức khác.</p></div>');
+                    }
+                });
+            }
+
+            loadOtherNews();
+        });
+    </script>
+}

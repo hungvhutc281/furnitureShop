@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\ProjectApi",
+    "\\ProjectApi\\Controllers",
+    "\\ProjectApi\\Data",
+    "\\ProjectApi\\Dto",
+    "\\ProjectApi\\Migrations",
+    "\\ProjectApi\\Model",
+    "\\ProjectUI"
+  ],
+  "SelectedNode": "\\ProjectApi\\Data\\FurnitureStoreContext.cs",
+  "PreviewInSolutionExplorer": false
+}

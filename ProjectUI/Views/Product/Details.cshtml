@@ -1,0 +1,483 @@
+@model ProjectUI.Models.ProductDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var apiBase = "https://localhost:7227";
+    var traGop = Math.Ceiling(Model.Price / 12);
+}
+<style>
+    .product-detail-main {
+        display: flex;
+        gap: 48px;
+        margin: 40px auto 0 auto;
+        max-width: 1200px;
+        align-items: flex-start;
+    }
+
+    .product-gallery {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .main-image {
+        width: 750px;
+        height: 500px;
+        background: #fafafa;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+    }
+
+        .main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+        }
+
+    .thumb-list {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+        .thumb-list img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #eee;
+            cursor: pointer;
+            transition: border 0.2s;
+        }
+
+            .thumb-list img.selected {
+                border: 2px solid #e53935;
+            }
+
+    .product-info-box {
+        flex: 1;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 32px 32px 24px 32px;
+        min-width: 340px;
+        max-width: 420px;
+    }
+
+    .product-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .product-price {
+        color: #e53935;
+        font-size: 1.7rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .product-attr {
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .quantity-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ccc;
+        background: #fff;
+        font-size: 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .quantity-btn:hover {
+            background: #eee;
+        }
+
+    .quantity-input {
+        width: 48px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        height: 32px;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .buy-btn, .cart-btn {
+        font-size: 1.13rem;
+        font-weight: bold;
+        border-radius: 8px;
+        border: none;
+        padding: 8px 0;
+        min-height: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+
+    .buy-btn {
+        flex: 1;
+        background: #e53935;
+        color: #fff;
+    }
+
+        .buy-btn:hover {
+            background: #b71c1c;
+        }
+
+    .cart-btn {
+        flex: 1;
+        background: #eee;
+        color: #222;
+    }
+
+        .cart-btn:hover {
+            background: #ccc;
+        }
+
+    .advice-box {
+        background: #f7f7f7;
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+        border: 1px solid #eee;
+    }
+
+    .advice-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .advice-form {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .advice-input {
+        flex: 1;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+    }
+
+    .advice-send {
+        background: #ffa500;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 18px;
+        font-weight: bold;
+    }
+
+    .advice-list {
+        font-size: 0.98rem;
+        color: #444;
+    }
+
+        .advice-list li {
+            margin-bottom: 4px;
+        }
+
+    .policy-section {
+        margin: 36px auto 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 24px 32px;
+        max-width: 1100px;
+    }
+
+    .policy-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 16px;
+    }
+
+    .policy-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+    }
+
+    .policy-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 260px;
+        margin-bottom: 12px;
+    }
+
+        .policy-item i {
+            font-size: 1.5rem;
+            color: #e53935;
+        }
+
+    .policy-link {
+        color: #1976d2;
+        font-size: 0.98rem;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .product-description {
+        margin: 36px auto 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 24px 32px;
+        max-width: 1100px;
+    }
+</style>
+<div class="product-detail-main">
+    <div class="product-gallery">
+        <div class="main-image">
+            <img id="mainProductImage" src="@(Model.ImageUrls.Any() ? apiBase + Model.ImageUrls.First() : "/images/no-image.png")" alt="Ảnh sản phẩm" />
+        </div>
+        <div class="thumb-list">
+            @for (int i = 0; i < Model.ImageUrls.Count; i++)
+            {
+                var img = Model.ImageUrls[i];
+                <img src="@($"{apiBase}{img}")" alt="Ảnh chi tiết" onclick="showMainImage('@(apiBase + img)', this)" class="thumbnail-img @(i == 0 ? "selected" : "")" />
+            }
+        </div>
+    </div>
+    <div class="product-info-box">
+        <div class="product-title">@Model.ProductName</div>
+        <div class="product-price"><span id="productPrice">@Model.Price.ToString("N0")</span> ₫</div>
+        <div class="product-attr"><b>Chất liệu:</b> @Model.Material</div>
+        <div class="product-attr"><b>Kích thước:</b> @Model.Dimensions</div>
+        <div class="product-attr"><b>Danh mục:</b> @Model.CategoryName</div>
+        <div class="quantity-box">
+            <span>Số lượng:</span>
+            <button class="quantity-btn" type="button" onclick="changeQuantity(-1)">-</button>
+            <input type="text" id="quantityInput" class="quantity-input" value="1" readonly />
+            <button class="quantity-btn" type="button" onclick="changeQuantity(1)">+</button>
+        </div>
+        <div class="product-attr">Tồn kho: <span id="stockQuantity">@Model.StockQuantity</span></div>
+        <div id="outOfStockMessage" style="color: red; font-weight: bold; margin-top: 10px; display: none;">Sản phẩm này tạm thời hết hàng. Vui lòng đợi cửa hàng nhập thêm. Xin lỗi vì sự bất tiện này. Cảm ơn quý khách!</div>
+        <div class="action-btns">
+            <button class="buy-btn" onclick="buyNow(event)">MUA NGAY</button>
+            <button class="cart-btn" onclick="requireLogin(event)">THÊM VÀO GIỎ HÀNG</button>
+        </div>
+        <div class="advice-box">
+            <div class="advice-title">Tư vấn</div>
+            <form class="advice-form" onsubmit="requireLogin(event)">
+                <input type="tel" class="advice-input" id="advicePhone" placeholder="Số điện thoại*" required />
+                <button class="advice-send" type="submit">GỬI <i class="bi bi-send"></i></button>
+            </form>
+            <ul class="advice-list">
+                <li>- Tư vấn công năng sắp xếp bố trí phòng</li>
+                <li>- Tư vấn chất liệu màu sắc, kích thước</li>
+                <li>- Tư vấn báo giá chi tiết 24/7</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="product-description">
+    @Html.Raw(Model.Description)
+</div>
+<div class="policy-section">
+    <div class="policy-title">Chính sách sản phẩm <span class="policy-link">Tìm hiểu thêm</span></div>
+    <div class="policy-list">
+        <div class="policy-item"><i class="bi bi-truck"></i> Miễn phí giao hàng & lắp đặt tại nhà</div>
+        <div class="policy-item"><i class="bi bi-shield-check"></i> Bảo hành trực tiếp tại nhà</div>
+        <div class="policy-item"><i class="bi bi-person-video3"></i> Kỹ thuật viên hỗ trợ trực tuyến</div>
+        <div class="policy-item"><i class="bi bi-award"></i> Hàng chính hãng - Bảo hành 24 tháng</div>
+        <div class="policy-item"><i class="bi bi-key"></i> Bảo hành remote 1 năm</div>
+    </div>
+</div>
+<script>
+    var unitPrice = @Model.Price;
+    var stockQuantity = @Model.StockQuantity;
+    function showMainImage(url, el) {
+        document.getElementById('mainProductImage').src = url;
+        document.querySelectorAll('.thumbnail-img').forEach(img => img.classList.remove('selected'));
+        if (el) el.classList.add('selected');
+    }
+    function changeQuantity(delta) {
+        var input = document.getElementById('quantityInput');
+        var val = parseInt(input.value) + delta;
+        if (val < 1) {
+            val = 1;
+        } else if (val > stockQuantity) {
+            val = stockQuantity;
+            Swal.fire({
+                icon: 'warning',
+                title: 'Số lượng vượt quá tồn kho!',
+                text: 'Bạn chỉ có thể mua tối đa ' + stockQuantity + ' sản phẩm này.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        input.value = val;
+        updateTotalPrice();
+    }
+    function updateTotalPrice() {
+        var qty = parseInt(document.getElementById('quantityInput').value);
+        var total = unitPrice * qty;
+        document.getElementById('productPrice').innerText = total.toLocaleString('vi-VN');
+    }
+    function isLoggedIn() {
+        return @User.Identity.IsAuthenticated.ToString().ToLower();
+    }
+    function requireLogin(e) {
+        if (!isLoggedIn()) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'H & H Luxury thông báo:',
+                text: 'Khách hàng cần đăng nhập/đăng ký để sử dụng tính năng này!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Đăng nhập ngay',
+                cancelButtonText: 'Để sau',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Users/Login';
+                }
+            });
+            return false;
+        }
+    }
+    function getProductIdFromUrl() {
+        var match = window.location.pathname.match(/Product\/Details\/(\d+)/);
+        return match ? parseInt(match[1]) : null;
+    }
+    function buyNow(e) {
+        if (!isLoggedIn()) {
+            requireLogin(e);
+            return;
+        }
+        var productId = getProductIdFromUrl();
+        if (!productId) {
+            alert('Không xác định được mã sản phẩm!');
+            return;
+        }
+        var product = {
+            productId: productId,
+            productName: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductName)),
+            unitPrice: @Model.Price,
+            quantity: parseInt(document.getElementById('quantityInput').value)
+        };
+        // Lấy userId, userEmail nếu có
+        var userId = '@(User.Identity.IsAuthenticated ? User.FindFirst("UserId")?.Value : "")';
+        if (userId) localStorage.setItem('userId', userId);
+        let cart = [];
+        if (localStorage.getItem('cart')) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        const idx = cart.findIndex(x => x.productId === product.productId);
+        if (idx >= 0) {
+            cart[idx].quantity += product.quantity;
+        } else {
+            cart.push(product);
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.location.href = '/Order/Checkout';
+    }
+    function addToCart(product) {
+        let cart = [];
+        if (localStorage.getItem('cart')) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        const idx = cart.findIndex(x => x.productId === product.productId);
+        if (idx >= 0) {
+            cart[idx].quantity += product.quantity;
+        } else {
+            cart.push(product);
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if (typeof updateCartCount === 'function') updateCartCount();
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Đã thêm vào giỏ hàng!',
+                text: product.productName + ' đã được thêm vào giỏ hàng thành công!',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        } else {
+            alert('Đã thêm sản phẩm vào giỏ hàng!');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        var cartBtn = document.querySelector('.cart-btn');
+        if (cartBtn) {
+            cartBtn.onclick = function (e) {
+                // KHÔNG kiểm tra đăng nhập ở đây
+                if (stockQuantity <= 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Thông báo',
+                        text: 'Sản phẩm này tạm thời hết hàng. Vui lòng đợi cửa hàng nhập thêm. Xin lỗi vì sự bất tiện này. Cảm ơn quý khách!',
+                        confirmButtonText: 'Đóng'
+                    });
+                    return;
+                }
+                var productId = getProductIdFromUrl();
+                if (!productId) {
+                    alert('Không xác định được mã sản phẩm!');
+                    return;
+                }
+                var product = {
+                    productId: productId,
+                    productName: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductName)),
+                    unitPrice: @Model.Price,
+                    quantity: parseInt(document.getElementById('quantityInput').value)
+                };
+                addToCart(product);
+                if (typeof updateCartCount === 'function') updateCartCount();
+            }
+        }
+    });
+    window.onload = function () {
+        const firstThumb = document.querySelector('.thumbnail-img');
+        if (firstThumb) firstThumb.classList.add('selected');
+        updateTotalPrice();
+
+        // kiểm tra số lượng sản phẩm
+        if (stockQuantity <= 0) {
+            document.querySelector('.action-btns').style.display = 'none';
+            document.querySelector('.quantity-box').style.display = 'none';
+            document.getElementById('outOfStockMessage').style.display = 'block';
+        } else {
+            document.getElementById('outOfStockMessage').style.display = 'none';
+        }
+    }
+</script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            function updateWishlistCount() {
+                var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                $('#wishlist-count').text(wishlist.length);
+            }
+            updateWishlistCount();
+        });
+    </script>
+} 

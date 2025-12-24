@@ -1,0 +1,254 @@
+﻿@{
+    ViewData["Title"] = "Danh sách hình ảnh sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Quản lý hình ảnh sản phẩm</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Hình ảnh sản phẩm</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách hình ảnh sản phẩm</h5>
+
+                        <div class="mb-3">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <i class="bi bi-plus-circle"></i> Thêm Hình Ảnh
+                            </button>
+                            <input id="searchBox" type="text" class="form-control mt-3" placeholder="Tìm kiếm theo mã sản phẩm..." />
+                        </div>
+
+                        <table class="table table-striped" id="imageTable">
+                            <thead>
+                                <tr>
+                                    <th>ID Hình Ảnh</th>
+                                    <th>Mã Sản Phẩm</th>
+                                    <th>Hình Ảnh</th>
+                                    <th>Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Hiển thị dữ liệu khi call API -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="imageForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Tạo / Sửa Hình Ảnh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="imageId" />
+                    <div class="mb-3">
+                        <label for="productId" class="form-label">Sản phẩm</label>
+                        <select class="form-control" id="productId" required>
+                            <option value="">Chọn sản phẩm</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Chọn Hình Ảnh</label>
+                        <input type="file" class="form-control" id="imageFile" accept="image/*" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageUrl" class="form-label">Đường Dẫn Hình Ảnh</label>
+                        <input type="text" class="form-control" id="imageUrl" readonly />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa mục này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiUrl = "https://localhost:7227/api/admin/productimage";
+        const productApiUrl = "https://localhost:7227/api/admin/product";
+
+        // Hiển thị sản phẩm khi trang tải lên
+        function loadProducts() {
+            axios.get(productApiUrl).then(res => {
+                const select = document.getElementById("productId");
+                select.innerHTML = '<option value="">Chọn sản phẩm</option>';
+                res.data.forEach(prod => {
+                    select.innerHTML += `<option value="${prod.productId}">${prod.productName}</option>`;
+                });
+            });
+        }
+
+        loadProducts();
+
+        document.getElementById("imageFile").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("imageUrl").value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Object để lưu trữ thông tin sản phẩm
+        let products = {};
+
+        function loadImages() {
+            // Hiển thị sản phẩm
+            axios.get(productApiUrl).then(prodRes => {
+                products = prodRes.data.reduce((acc, prod) => {
+                    acc[prod.productId] = prod.productName;
+                    return acc;
+                }, {});
+
+                // Hiển thị dữ liệu ảnh
+                return axios.get(apiUrl);
+            }).then(imgRes => {
+                const rows = imgRes.data.map(img => `
+                    <tr>
+                        <td>${img.imageId}</td>
+                        <td>${products[img.productId] || img.productId}</td>
+                        <td>
+                            <img src="https://localhost:7227${img.imageUrl}" 
+                                 alt="Hình ảnh sản phẩm" 
+                                 style="max-width: 100px; max-height: 100px; object-fit: contain;" 
+                                 onerror="this.src='/admin/img/no-image.png'"/>
+                        </td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editImage(${img.imageId})">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteImage(${img.imageId})">Xóa</button>
+                        </td>
+                    </tr>
+                `).join("");
+                document.querySelector("#imageTable tbody").innerHTML = rows;
+            });
+        }
+
+        document.getElementById("imageForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const id = document.getElementById("imageId").value;
+            const productId = document.getElementById("productId").value;
+            const imageFile = document.getElementById("imageFile").files[0];
+
+            if (!productId) {
+                alert("Vui lòng chọn sản phẩm");
+                return;
+            }
+
+            if (!imageFile && !id) {
+                alert("Vui lòng chọn hình ảnh");
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append("productId", productId);
+                if (imageFile) {
+                    formData.append("imageFile", imageFile);
+                }
+
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                };
+
+                if (id) {
+                    await axios.put(`${apiUrl}/${id}`, formData, config);
+                } else {
+                    await axios.post(apiUrl, formData, config);
+                }
+
+                loadImages();
+                bootstrap.Modal.getInstance(document.getElementById("imageModal")).hide();
+                // Reset form nhập
+                document.getElementById("imageForm").reset();
+                document.getElementById("imageId").value = "";
+                document.getElementById("imageUrl").value = "";
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Có lỗi xảy ra khi lưu hình ảnh. Vui lòng thử lại.");
+            }
+        });
+
+        function editImage(id) {
+            axios.get(`${apiUrl}/${id}`).then(res => {
+                const img = res.data;
+                document.getElementById("imageId").value = img.imageId;
+                document.getElementById("productId").value = img.productId;
+                document.getElementById("imageUrl").value = img.imageUrl;
+                document.getElementById("imageFile").value = "";
+                new bootstrap.Modal(document.getElementById("imageModal")).show();
+            });
+        }
+
+        let deleteId = null;
+        function deleteImage(id) {
+            deleteId = id;
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+        document.getElementById('btn-confirm-delete').onclick = function() {
+            if (deleteId !== null) {
+                axios.delete(`${apiUrl}/${deleteId}`).then(() => {
+                    loadImages();
+                    deleteId = null;
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                });
+            }
+        };
+        window.deleteImage = deleteImage;
+
+        document.getElementById("searchBox").addEventListener("input", function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll("#imageTable tbody tr").forEach(row => {
+                const productName = row.children[1].textContent.toLowerCase();
+                row.style.display = productName.includes(keyword) ? "" : "none";
+            });
+        });
+
+        loadImages();
+    </script>
+}

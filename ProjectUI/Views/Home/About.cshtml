@@ -1,0 +1,605 @@
+@{
+    ViewData["Title"] = "Giới thiệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Hiệu ứng cho card hình ảnh */
+    .production-card {
+        transition: all 0.5s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .production-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        }
+
+        .production-card img {
+            transition: all 0.5s ease;
+        }
+
+        .production-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .production-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #FFA500, #e67e22);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .production-card:hover::after {
+            transform: scaleX(1);
+        }
+
+    /* Hiệu ứng cho tiêu đề */
+    .section-title {
+        position: relative;
+        display: inline-block;
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(90deg, #FFA500, #e67e22);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .section-title:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+    /* Hiệu ứng cho founder quote */
+    .founder-quote {
+        transition: all 0.3s ease;
+    }
+
+        .founder-quote:hover {
+            background-color: rgba(255, 165, 0, 0.05);
+            border-left-color: #e67e22 !important;
+        }
+
+    /* Hiệu ứng cho các giá trị cốt lõi */
+    .core-value li {
+        transition: all 0.3s ease;
+        position: relative;
+        padding-left: 15px;
+    }
+
+        .core-value li::before {
+            content: '→';
+            position: absolute;
+            left: -5px;
+            color: #FFA500;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .core-value li:hover {
+            padding-left: 20px;
+            color: #e67e22;
+        }
+
+            .core-value li:hover::before {
+                opacity: 1;
+                left: 0;
+            }
+
+    /* Hiệu ứng cho badge founder */
+    .founder-badge {
+        transition: all 0.3s ease;
+        transform: perspective(100px) rotateX(0deg);
+    }
+
+        .founder-badge:hover {
+            transform: perspective(100px) rotateX(20deg);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
+        }
+
+    /* Section header cho quy trình */
+    .process-section-header {
+        background: linear-gradient(135deg, #FFA500, #e67e22);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    /* Styles cho phần bản đồ */
+    .map-container {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+
+        .map-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+    .contact-info-card {
+        background: linear-gradient(135deg, rgba(255, 165, 0, 0.05), rgba(230, 126, 34, 0.05));
+        border: 1px solid rgba(255, 165, 0, 0.2);
+        border-radius: 15px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+        .contact-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.15);
+            border-color: rgba(230, 126, 34, 0.3);
+        }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+        .contact-item:hover {
+            background: rgba(255, 165, 0, 0.1);
+            transform: translateX(10px);
+        }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #FFA500, #e67e22);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover .contact-icon {
+        transform: rotate(360deg);
+    }
+
+    .location-section {
+        background: linear-gradient(135deg, rgba(255, 165, 0, 0.02), rgba(230, 126, 34, 0.02));
+        padding: 50px 0;
+        margin: 50px 0;
+        border-radius: 20px;
+    }
+
+
+    /* CSS cho logo tròn với hiệu ứng hover */
+    .logo-hover {
+        transition: all 0.5s ease;
+        cursor: pointer;
+    }
+
+        .logo-hover:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(255, 165, 0, 0.4) !important;
+            border-color: #e67e22 !important;
+        }
+
+    /* Responsive cho logo */
+    @@media (max-width: 768px) {
+        .logo-hover {
+            width: 250px !important;
+            height: 250px !important;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .logo-hover {
+            width: 200px !important;
+            height: 200px !important;
+        }
+    }
+
+</style>
+
+<section class="about-section py-5">
+    <div class="container">
+        <!-- Banner giới thiệu -->
+
+
+
+
+        <!-- Section Founder -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-4 mb-4 mb-md-0 text-center">
+                <img src="@Url.Content("~/images/FounderH&Hluxury.jpg")" alt="Mr Hoàng Hùng - Người sáng lập H&H Luxury" class="img-fluid rounded-circle shadow" style="width:220px;height:220px;object-fit:cover;display:block;margin:auto; transition: all 0.3s ease;">
+                <div class="mt-3"><span class="badge bg-warning text-dark founder-badge" style="font-size:1.1rem;">Founder</span></div>
+            </div>
+            <div class="col-md-8">
+                <h3 class="mb-2 section-title" style="font-weight:bold;">Người sáng lập - <span style="color:#e53935;">Mr Hoàng Hùng</span></h3>
+                <p style="font-size:1.08rem; transition: all 0.3s ease;" class="hover-text">Với hơn 7 năm kinh nghiệm trong lĩnh vực nội thất, <b>Mr Hoàng Hùng</b> đã xây dựng nên thương hiệu H&H Luxury với khát vọng mang đến cho người Việt những sản phẩm nội thất chất lượng quốc tế, dịch vụ tận tâm và trải nghiệm mua sắm hiện đại. Anh là người truyền cảm hứng, dẫn dắt đội ngũ H&H Luxury không ngừng đổi mới, sáng tạo để phục vụ khách hàng tốt nhất.</p>
+                <blockquote class="blockquote mt-3 mb-0 ps-3 border-start border-3 border-warning founder-quote">
+                    <p class="mb-1" style="font-size:1.1rem;">"Nội thất không chỉ là vật dụng, mà còn là nghệ thuật nâng tầm giá trị sống cho mỗi gia đình."</p>
+                    <footer class="blockquote-footer">Mr Hoàng Hùng, Founder H&H Luxury</footer>
+                </blockquote>
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-5">
+            <div class="col-md-4 mb-4 mb-md-0 text-center">
+                <img src="@Url.Content("~/images/LogoHH.png")"
+                     alt="Nội thất H&H Luxury"
+                     class="img-fluid rounded-circle shadow logo-hover"
+                     style="object-fit:cover; width:270px; height:270px; border: 4px solid #FFA500; transition: all 0.3s ease;">
+            </div>
+            
+            <div class="col-md-5">
+                <h2 class="mb-3 section-title" style="color:#FFA500; font-weight:bold;">H&H Luxury – Tiên phong nội thất cao cấp</h2>
+                <p style="font-size:1.1rem; transition: all 0.3s ease;" class="hover-text">H&H Luxury là thương hiệu nội thất cao cấp, thành lập từ năm 2018 bởi Founder Hoàng Hùng. Chúng tôi tự hào mang đến giải pháp tổng thể từ thiết kế, thi công đến cung cấp sản phẩm nội thất hiện đại, sang trọng cho biệt thự, căn hộ, penthouse, villa...</p>
+            </div>
+        </div>
+
+
+        <!-- Section Quy trình sản xuất và giao hàng -->
+        <div class="mb-5">
+            <div class="process-section-header">
+                <h4 class="mb-0" style="font-weight:bold;">Quy trình sản xuất và giao hàng tại H&H Luxury</h4>
+                <p class="mb-0 mt-2">Từ xưởng sản xuất hiện đại đến tay khách hàng</p>
+            </div>
+
+            <!-- Phần 1: Xưởng sản xuất -->
+            <div class="mb-4">
+                <h5 class="mb-3" style="color:#e67e22; font-weight:bold;">🏭 Xưởng sản xuất hiện đại</h5>
+                <div class="row g-4">
+                    @{
+                        var factoryImages = new List<string> { "AnhSanXuatDoNoiThat.jpg", "AnhSanXuatDoNoiThat1.jpg" };
+                        var factoryDescriptions = new List<string>
+                    {
+                    "Xưởng sản xuất hiện đại với máy móc tiên tiến, đội ngũ thợ lành nghề",
+                    "Quy trình gia công chuyên nghiệp, kiểm soát chất lượng nghiêm ngặt"
+                    };
+                    }
+
+                    @for (int i = 0; i < factoryImages.Count; i++)
+                    {
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm production-card">
+                                <img src="@($"/images/{factoryImages[i]}")" alt="Xưởng sản xuất @(i+1)" class="card-img-top" style="height:250px;object-fit:cover;" />
+                                <div class="card-body text-center">
+                                    <div class="mb-2" style="font-weight:bold; color:#e67e22; transition: all 0.3s ease;" class="hover-text">Xưởng sản xuất @(i + 1)</div>
+                                    <div class="card-text" style="font-size:1rem; transition: all 0.3s ease;" class="hover-text">@factoryDescriptions[i]</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Phần 2: Sản phẩm đến tay khách hàng -->
+            <div class="mb-4">
+                <h5 class="mb-3" style="color:#e67e22; font-weight:bold;">🚚 Sản phẩm đến tay khách hàng</h5>
+                <div class="row g-4">
+                    @{
+                        var deliveryImages = new List<string>
+                    {
+                    "AnhSanXuatDoNoiThat10.jpg",
+                    "AnhSanXuatDoNoiThat2.jpg.webp",
+                    "AnhSanXuatDoNoiThat3.jpg",
+                    "AnhSanXuatDoNoiThat4.jpg.webp",
+                    "AnhSanXuatDoNoiThat6.jpg.webp",
+                    "AnhSanXuatDoNoiThat7.jpg",
+                    "AnhSanXuatDoNoiThat8.jpg",
+                    "AnhSanXuatDoNoiThat9.webp"
+                    };
+
+                        var deliveryDescriptions = new List<string>
+                    {
+                    "Kiểm tra chất lượng sản phẩm trước khi đóng gói",
+                    "Đóng gói cẩn thận, bảo vệ sản phẩm trong quá trình vận chuyển",
+                    "Vận chuyển chuyên nghiệp với đội ngũ giao hàng tận tâm",
+                    "Lắp đặt tại nhà khách hàng bởi đội ngũ kỹ thuật viên",
+                    "Hướng dẫn sử dụng và bảo trì sản phẩm chi tiết",
+                    "Kiểm tra lần cuối cùng sau khi lắp đặt hoàn thành",
+                    "Bàn giao sản phẩm hoàn thiện đến khách hàng",
+                    "Dịch vụ hậu mãi và bảo hành chu đáo"
+                    };
+                    }
+
+                    @for (int i = 0; i < deliveryImages.Count; i++)
+                    {
+                        <div class="col-md-3 col-sm-6 col-12">
+                            <div class="card h-100 shadow-sm production-card">
+                                <img src="@($"/images/{deliveryImages[i]}")" alt="Giao hàng @(i+1)" class="card-img-top" style="height:200px;object-fit:cover;" />
+                                <div class="card-body text-center">
+                                    <div class="mb-2" style="font-weight:bold; color:#e67e22; transition: all 0.3s ease;" class="hover-text">Sản phẩm tới tay khách hàng</div>
+                                    <div class="card-text" style="font-size:0.9rem; transition: all 0.3s ease;" class="hover-text">@deliveryDescriptions[i]</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Các section khác với bố cục đối nghịch -->
+        <!-- Row 1: Tầm nhìn - Sứ mệnh -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 order-md-1">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">🎯 Tầm nhìn</h4>
+                <p style="transition: all 0.3s ease; font-size: 1.05rem; line-height: 1.6;" class="hover-text">Trở thành đơn vị tư vấn, cung cấp giải pháp nội thất tổng thể hàng đầu tại Việt Nam, phát triển thương hiệu vươn tầm quốc tế với tiêu chuẩn chất lượng châu Âu.</p>
+            </div>
+            <div class="col-md-6 order-md-2 text-center">
+                <div style="background: rgba(255, 165, 0, 0.08); border: 1px solid rgba(255, 165, 0, 0.2); padding: 25px; border-radius: 12px; color: #333;">
+                    <i class="fas fa-eye" style="font-size: 2.2rem; margin-bottom: 10px; color: rgba(255, 165, 0, 0.7);"></i>
+                    <h6 style="color: #e67e22; margin-bottom: 8px;">Định hướng phát triển</h6>
+                    <p class="mb-0" style="font-size: 0.95rem; color: #666;">Hướng tới mục tiêu trở thành thương hiệu nội thất số 1 Việt Nam</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Sứ mệnh - Giá trị cốt lõi -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 order-md-2">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">🚀 Sứ mệnh</h4>
+                <p style="transition: all 0.3s ease; font-size: 1.05rem; line-height: 1.6;" class="hover-text">Kiến tạo không gian sống đẳng cấp, mang lại giá trị bền vững và trải nghiệm tuyệt vời cho từng khách hàng thông qua dịch vụ tư vấn chuyên nghiệp và sản phẩm chất lượng cao.</p>
+            </div>
+            <div class="col-md-6 order-md-1 text-center">
+                <div style="background: rgba(230, 126, 34, 0.08); border: 1px solid rgba(230, 126, 34, 0.2); padding: 25px; border-radius: 12px; color: #333;">
+                    <i class="fas fa-rocket" style="font-size: 2.2rem; margin-bottom: 10px; color: rgba(230, 126, 34, 0.7);"></i>
+                    <h6 style="color: #e67e22; margin-bottom: 8px;">Cam kết chất lượng</h6>
+                    <p class="mb-0" style="font-size: 0.95rem; color: #666;">Đặt khách hàng làm trung tâm trong mọi hoạt động</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Giá trị cốt lõi - Website & Công nghệ -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 order-md-1">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">💎 Giá trị cốt lõi</h4>
+                <ul class="ps-0 core-value" style="list-style: none;">
+                    <li style="margin-bottom: 8px; font-size: 1rem;"><i class="fas fa-star" style="color: rgba(255, 165, 0, 0.8); margin-right: 8px;"></i>Chất lượng & Sáng tạo</li>
+                    <li style="margin-bottom: 8px; font-size: 1rem;"><i class="fas fa-heart" style="color: rgba(255, 165, 0, 0.8); margin-right: 8px;"></i>Khách hàng là trung tâm</li>
+                    <li style="margin-bottom: 8px; font-size: 1rem;"><i class="fas fa-handshake" style="color: rgba(255, 165, 0, 0.8); margin-right: 8px;"></i>Đạo đức nghề nghiệp</li>
+                    <li style="margin-bottom: 8px; font-size: 1rem;"><i class="fas fa-leaf" style="color: rgba(255, 165, 0, 0.8); margin-right: 8px;"></i>Trách nhiệm cộng đồng</li>
+                </ul>
+            </div>
+            <div class="col-md-6 order-md-2 text-center">
+                <div style="background: rgba(255, 165, 0, 0.08); border: 1px solid rgba(255, 165, 0, 0.2); padding: 25px; border-radius: 12px; color: #333;">
+                    <i class="fas fa-gem" style="font-size: 2.2rem; margin-bottom: 10px; color: rgba(255, 165, 0, 0.7);"></i>
+                    <h6 style="color: #e67e22; margin-bottom: 8px;">Tiêu chuẩn vàng</h6>
+                    <p class="mb-0" style="font-size: 0.95rem; color: #666;">Những giá trị định hướng mọi hành động của chúng tôi</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Website & Công nghệ - Dịch vụ trực tuyến -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 order-md-2">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">🌐 Website & Công nghệ</h4>
+                <p style="transition: all 0.3s ease; font-size: 1.05rem; line-height: 1.6;" class="hover-text">Website H&H Luxury được thiết kế hiện đại với công nghệ tiên tiến, mang đến trải nghiệm mua sắm trực tuyến tuyệt vời. Khách hàng có thể dễ dàng tham khảo sản phẩm, đặt hàng online và nhận tư vấn 24/7 qua các kênh số.</p>
+                <div class="mt-2">
+                    <span class="badge" style="background-color: rgba(40, 167, 69, 0.15); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.3); margin-right: 8px; font-size: 0.85rem;">Tư vấn Online</span>
+                    <span class="badge" style="background-color: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); font-size: 0.85rem;">Đặt hàng 24/7</span>
+                </div>
+            </div>
+            <div class="col-md-6 order-md-1 text-center">
+                <div style="background: rgba(230, 126, 34, 0.08); border: 1px solid rgba(230, 126, 34, 0.2); padding: 25px; border-radius: 12px; color: #333;">
+                    <i class="fas fa-laptop" style="font-size: 2.2rem; margin-bottom: 10px; color: rgba(230, 126, 34, 0.7);"></i>
+                    <h6 style="color: #e67e22; margin-bottom: 8px;">Công nghệ hiện đại</h6>
+                    <p class="mb-0" style="font-size: 0.95rem; color: #666;">Ứng dụng công nghệ số trong trải nghiệm khách hàng</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">Showroom & Nhà máy sản xuất</h4>
+                <p style="transition: all 0.3s ease;" class="hover-text">Showroom H&H Luxury: Đường láng ,Láng thượng , Đống Đa . Quy mô hơn 1000m2, trưng bày các sản phẩm nội thất cao cấp, không gian trải nghiệm thực tế. <br />Nhà máy sản xuất hiện đại, diện tích 4000m2, đội ngũ nghệ nhân lành nghề, quy trình khép kín từ thiết kế đến hoàn thiện sản phẩm.</p>
+            </div>
+            <div class="col-md-6">
+                <h4 class="mb-2 section-title" style="color:#e67e22;">Trách nhiệm cộng đồng</h4>
+                <p style="transition: all 0.3s ease;" class="hover-text">H&H Luxury luôn chú trọng bảo vệ môi trường, sử dụng vật liệu thân thiện, tham gia các hoạt động thiện nguyện, xây dựng cộng đồng sống xanh, nhân ái.</p>
+            </div>
+        </div>
+
+        <!-- Section Vị trí và Liên hệ với Bản đồ -->
+        <div class="location-section">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h3 class="section-title" style="color:#e67e22; font-weight:bold; font-size:2.2rem;">📍 Vị trí & Liên hệ</h3>
+                    <p style="font-size:1.1rem; color:#666; margin-top:15px;">Hãy đến thăm showroom H&H Luxury để trải nghiệm trực tiếp các sản phẩm nội thất cao cấp</p>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Thông tin liên hệ -->
+                    <div class="col-lg-5">
+                        <div class="contact-info-card">
+                            <h4 class="mb-4 text-center" style="color:#e67e22; font-weight:bold;">Thông tin liên hệ</h4>
+
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color:#e67e22; margin-bottom:5px; font-weight:bold;">Địa chỉ Showroom</h6>
+                                    <p class="mb-0" style="color:#666;">Đường Láng, Láng Thượng, Đống Đa, Hà Nội</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color:#e67e22; margin-bottom:5px; font-weight:bold;">Điện thoại</h6>
+                                    <p class="mb-0" style="color:#666;">
+                                        <a href="tel:0329362115" style="text-decoration:none; color:#666;">0329.362.115</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color:#e67e22; margin-bottom:5px; font-weight:bold;">Email</h6>
+                                    <p class="mb-0" style="color:#666;">
+                                        <a href="mailto:hungvhutc281@gmail.com" style="text-decoration:none; color:#666;">hungvhutc281@gmail.com</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color:#e67e22; margin-bottom:5px; font-weight:bold;">Website</h6>
+                                    <p class="mb-0" style="color:#666;">
+                                        <a href="http://www.hhluxury.com" target="_blank" style="text-decoration:none; color:#666;">www.hhluxury.com</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h6 style="color:#e67e22; margin-bottom:5px; font-weight:bold;">Giờ làm việc</h6>
+                                    <p class="mb-0" style="color:#666;">
+                                        Thứ 2 - Thứ 7: 8:00 - 18:00<br>
+                                        Chủ nhật: 8:00 - 17:00
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bản đồ Google Maps -->
+                    <div class="col-lg-7">
+                        <div class="map-container">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.096615319481!2d105.80487931476285!3d21.02769659289945!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab86b912a7e5%3A0x8327c8b8fa1dc6a2!2zxJDGsOG7nW5nIEzDoG5nLCBUaGFuaCBDb25nLCBCYSBExKluaCwgSMOgIE7hu5lpLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1642584726755!5m2!1svi!2s"
+                                    width="100%"
+                                    height="450"
+                                    style="border:0;"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+
+                        <!-- Hướng dẫn đường đi -->
+                        <div class="mt-4 p-3" style="background: rgba(255, 165, 0, 0.05); border-radius: 10px; border-left: 4px solid #FFA500;">
+                            <h6 style="color:#e67e22; font-weight:bold; margin-bottom:10px;">
+                                <i class="fas fa-route" style="margin-right:8px;"></i>Hướng dẫn đường đi
+                            </h6>
+                            <ul style="margin-bottom:0; padding-left:20px; color:#666;">
+                                <li>Từ trung tâm Hà Nội: Đi theo đường Láng về phía Cầu Giấy</li>
+                                <li>Gần các trường đại học lớn như ĐH Giao thông vận tải ,ĐH Quốc gia, ĐH Ngoại Thương</li>
+                                <li>Có bãi đỗ xe rộng rãi, thuận tiện cho khách hàng</li>
+                                <li>Gần các tuyến xe buýt: 03, 08, 23, 40, 103</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="text-center mt-5">
+                    <div class="p-4" style="background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(230, 126, 34, 0.1)); border-radius: 15px; border: 1px solid rgba(255, 165, 0, 0.2);">
+                        <h5 style="color:#e67e22; font-weight:bold; margin-bottom:15px;">
+                            <i class="fas fa-handshake" style="margin-right:10px;"></i>Hãy đến trải nghiệm trực tiếp tại showroom H&H Luxury
+                        </h5>
+                        <p style="color:#666; margin-bottom:20px; font-size:1rem;">
+                            Đội ngũ tư vấn chuyên nghiệp của chúng tôi sẵn sàng hỗ trợ bạn tìm kiếm giải pháp nội thất hoàn hảo cho không gian sống của mình.
+                        </p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="tel:0329362115" class="btn btn-lg" style="background: linear-gradient(135deg, #FFA500, #e67e22); color: white; border: none; border-radius: 25px; padding: 12px 30px; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-phone" style="margin-right:8px;"></i>Gọi ngay
+                            </a>
+                            <a href="mailto:hungvhutc281@gmail.com" class="btn btn-lg btn-outline-warning" style="border: 2px solid #FFA500; color: #e67e22; border-radius: 25px; padding: 12px 30px; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-envelope" style="margin-right:8px;"></i>Gửi email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Thêm hiệu ứng hover cho các phần tử
+    document.addEventListener('DOMContentLoaded', function () {
+        // Hover effect cho text elements
+        const hoverTexts = document.querySelectorAll('.hover-text');
+        hoverTexts.forEach(text => {
+            text.addEventListener('mouseenter', function () {
+                this.style.color = '#e67e22';
+                this.style.transform = 'translateX(5px)';
+            });
+            text.addEventListener('mouseleave', function () {
+                this.style.color = '';
+                this.style.transform = '';
+            });
+        });
+
+        // Smooth scroll effect cho anchor links
+        const anchorLinks = document.querySelectorAll('a[href^="#"]');
+        anchorLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation cho contact items khi scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        const contactItems = document.querySelectorAll('.contact-item');
+        contactItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(30px)';
+            item.style.transitionDelay = `${index * 0.1}s`;
+            observer.observe(item);
+        });
+    });
+</script>
