@@ -72,15 +72,6 @@ namespace ProjectApi.Controllers
             return NoContent();
         }
 
-        // POST: api/PurchaseOrders
-        [HttpPost]
-        public async Task<ActionResult<PurchaseOrder>> PostPurchaseOrder(PurchaseOrder purchaseOrder)
-        {
-            _context.PurchaseOrders.Add(purchaseOrder);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPurchaseOrder", new { id = purchaseOrder.PurchaseOrderId }, purchaseOrder);
-        }
 
         // DELETE: api/PurchaseOrders/5
         [HttpDelete("{id}")]

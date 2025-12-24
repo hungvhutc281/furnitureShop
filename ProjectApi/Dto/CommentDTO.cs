@@ -17,10 +17,4 @@
         public int Rating { get; set; }
     }
 
-    public class UpdateCommentDTO
-    {
-        public int CommentId { get; set; }
-        public string Content { get; set; }
-        public int Rating { get; set; }
-    }
 }

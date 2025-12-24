@@ -41,7 +41,6 @@ namespace ProjectApi.Model
         [MaxLength(200)]
         public string? Image { get; set; }
 
-        public bool EmailConfirmed { get; set; } = false;
 
         [StringLength(6)]
         public string? OtpCode { get; set; }

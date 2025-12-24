@@ -19,7 +19,6 @@ namespace ProjectApi.Model
         [Column(TypeName = "nvarchar(max)")]
         public string Image { get; set; }
 
-        public DateTime PostedDate { get; set; }
 
         [StringLength(10000)]
         public string Author { get; set; }
